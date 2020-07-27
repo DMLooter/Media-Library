@@ -1,3 +1,5 @@
+package com.verban.media;
+
 import java.util.*;
 
 /**
@@ -6,8 +8,9 @@ import java.util.*;
 */
 public abstract class Media{
 	private String name;
-	private Artist[] creators;
+	private String[] artists;
 	private Date creation;
+	private double rating;
 
 	public void setName(String name){
 		this.name = name;
@@ -17,7 +20,7 @@ public abstract class Media{
 		return name;
 	}
 
-	public void setCreators(Artist... a){
-		creators = a;
+	public void setArtists(String... a){
+		artists = a;
 	}
 }

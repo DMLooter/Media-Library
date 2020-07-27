@@ -1,3 +1,5 @@
+package com.verban.media;
+
 /**
 This class defines any ordered collection of media, such as a playlist, album, or artist. This collection must support adding, removing, and reordering.
 */
