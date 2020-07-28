@@ -1,26 +1,33 @@
 package com.verban.media;
 
 import java.io.*;
+import java.util.*;
+import java.util.stream.*;
 import org.jaudiotagger.audio.*;
 import org.jaudiotagger.audio.exceptions.*;
 import org.jaudiotagger.tag.*;
 /**
-	Represents a single song held in an audio file. Must point to a valid audio file in the MP3, WAV, WMA, ACC, FLAC, or OGG formats.
+* Represents a single song held in an audio file. Must point to a valid audio file in the MP3, WAV, WMA, ACC, FLAC, or OGG formats.
+*
+* @author Michael Verban (2020)
 */
 public class Song extends Media {
 	// Runtime in seconds
 	private int length;
+	// File where this song is
 	private File file;
+	// Genre of the song
 	private String genre;
-	private Album originalAlbum;
+	// The name of the  original Album which this recording of the song came from
+	private String originalAlbum;
 
 	/**
-		Attempts to read in information from a file and populate this object.
-		If the file can be read, it will attempt to parse out data, if no tag data can be read, internal fields must be set manually.
-
-		@param file the file that contains this song
-		@throws IOException if the file is invalid or cannot be read in some way.
-		@throws FileFormatException if the file is not a valid audio format
+	* Attempts to read in information from a file and populate this object.
+	* If the file can be read, it will attempt to parse out data, if no tag data can be read, internal fields must be set manually.
+	*
+	* @param file the file that contains this song
+	* @throws IOException if the file is invalid or cannot be read in some way.
+	* @throws FileFormatException if the file is not a valid audio format
 	*/
 	public Song(File file) throws IOException{
 		if(!file.isFile())
@@ -40,7 +47,7 @@ public class Song extends Media {
 	}
 
 	/**
-		Attempts to parse tags out of the file, such as runtime, artist, song name, date, genre, and original album.
+	* Attempts to parse tags out of the file, such as runtime, artist, song name, date, genre, and original album.
 	*/
 	private void parseTags() throws CannotReadException, IOException{
 		try{
@@ -49,10 +56,48 @@ public class Song extends Media {
 			AudioHeader head = f.getAudioHeader();
 
 			this.length = head.getTrackLength();
-		}catch(TagException | ReadOnlyFileException | InvalidAudioFrameException e){
+
+			this.title = tag.getFirst(FieldKey.TITLE);
+			// Artists could be multiple, so we have to get the list of TagFields and map them to strings
+			// They are in a wierd format after toString, so some processing is required.
+			this.artists = tag.getFields(FieldKey.ARTIST).stream().map(e->e.toString())
+				.map(e->e.substring(e.indexOf('"')+1, e.lastIndexOf('"')).trim())
+				.collect(Collectors.toList()).toArray(new String[1]);
+			try{
+				this.year = Integer.parseInt(tag.getFirst(FieldKey.YEAR));
+			}catch(NumberFormatException e){
+				// If we fail, just leave it blank
+			}
+			this.genre = tag.getFirst(FieldKey.GENRE);
+			this.originalAlbum = tag.getFirst(FieldKey.ALBUM);
+
+
+		}catch(ArrayStoreException | TagException | ReadOnlyFileException | InvalidAudioFrameException e){
+			e.printStackTrace();
 			// A tag exception just means invalid tags, the audio should still be fine, no need to do anything.
-			// A read only file exception shouldnt be thrown unless i write here, which i do not. This library seems interesting if it can throw that on a read.
+			// A read only file exception shouldnt be thrown unless i write here, which i do not.
+			//This library seems interesting if it can throw that on a read.
 			// Also not doing anything with the audio frames here, so that seems irrelevant.
 		}
+	}
+
+	public int getTrackLength(){
+		return length;
+	}
+
+	public String getGenre(){
+		return genre;
+	}
+
+	public void setGenre(String genre){
+		this.genre = genre;
+	}
+
+	public String getOriginalAlbum(){
+		return originalAlbum;
+	}
+
+	public void setOriginalAlbum(String a){
+		this.originalAlbum = a;
 	}
 }
