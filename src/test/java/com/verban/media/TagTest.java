@@ -14,7 +14,7 @@ public class TagTest {
     /**
      * Rigorous Test :-)
      */
-    @Test
+    //@Test
     public void test001_Song_Exceptions() {
 		Song s;
 		try{
@@ -35,7 +35,7 @@ public class TagTest {
 		}
     }
 
-	@Test
+	//@Test
 	public void test002_Tag_Read_mp3(){
 		try{
 			Song s = new Song(new File("src/test/java/com/verban/media/test.mp3"));
@@ -51,8 +51,8 @@ public class TagTest {
 			fail("Exception thrown when not expected in Test002");
 		}
 	}
-	
-	@Test
+
+	//@Test
 	public void test003_Set_Add_Artists_Media(){
 		try{
 			Song s = new Song(new File("src/test/java/com/verban/media/test.mp3"));

@@ -14,8 +14,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
 	</properties>
 
 	<repositories>
@@ -23,6 +23,10 @@
         	<id>jaudiotagger-repository</id>
         	<url>https://dl.bintray.com/ijabz/maven</url>
     	</repository>
+		<repository>
+			<id>mvn</id>
+			<url>https://mvnrepository.com/artifact/org.openjfx/javafx</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -43,6 +47,12 @@
     		<groupId>net.jthink</groupId>
 			<artifactId>jaudiotagger</artifactId>
 	    	<version>2.2.3</version>
+		</dependency>
+		<!--JFX runtime-->
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-controls</artifactId>
+			<version>11</version>
 		</dependency>
 	</dependencies>
 
@@ -87,6 +97,14 @@
 				<plugin>
 					<artifactId>maven-project-info-reports-plugin</artifactId>
 					<version>3.0.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.openjfx</groupId>
+					<artifactId>javafx-maven-plugin</artifactId>
+					<version>0.0.3</version>
+					<configuration>
+						<mainClass>com.verban.media.Main</mainClass>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
