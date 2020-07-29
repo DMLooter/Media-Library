@@ -16,7 +16,7 @@ public abstract class Media{
 	// Year this media was created
 	protected int year;
 	// Five star rating of this piece of media
-	private double rating;
+	private double rating = 0;
 
 	public void setTitle(String title){
 		this.title = title;
@@ -26,10 +26,25 @@ public abstract class Media{
 		return title;
 	}
 
-	public void setArtists(String... a){
-		artists = a;
+	/**
+	* Clears the current artists of this media and replaces them with those passed in.
+	* @param artists the new list of artists for this media
+	*/
+	public void setArtists(String... artists){
+		this.artists = artists;
 	}
 
+	/**
+	* Adds a single artist to this piece of media
+	*/
+	public void addArtist(String artist){
+		this.artists = Arrays.copyOf(this.artists, this.artists.length + 1);
+		this.artists[this.artists.length-1] = artist;
+	}
+
+	/**
+	* Returns a copy of the list of artists for this media.
+	*/
 	public String[] getArtists(){
 		return Arrays.copyOf(artists, artists.length);
 	}

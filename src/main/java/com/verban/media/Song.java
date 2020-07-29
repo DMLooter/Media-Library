@@ -20,6 +20,7 @@ public class Song extends Media {
 	private String genre;
 	// The name of the  original Album which this recording of the song came from
 	private String originalAlbum;
+	//TODO maybe add track number on that album
 
 	/**
 	* Attempts to read in information from a file and populate this object.
@@ -81,6 +82,32 @@ public class Song extends Media {
 		}
 	}
 
+	/**
+	* Takes the metadata that this file has been given and writes it back to the file.
+	* @return true if write fully succeded, false otherwise. Note that even on a false return, some data may be modified.
+	*/
+	public boolean writeMetaData(){
+		try{
+			AudioFile f = AudioFileIO.read(file);
+			Tag tag = f.getTag();
+			tag.setField(FieldKey.TITLE, this.title);
+
+			tag.deleteField(FieldKey.ARTIST);
+			for(String a : this.artists){
+				tag.addField(FieldKey.ARTIST, a);
+			}
+
+			tag.setField(FieldKey.YEAR, ""+this.year);
+
+			tag.setField(FieldKey.ALBUM, this.originalAlbum);
+			tag.setField(FieldKey.GENRE, this.genre);
+
+		}catch(IOException | CannotReadException | TagException | ReadOnlyFileException | InvalidAudioFrameException e){
+			return false;
+		}
+		return true;
+	}
+
 	public int getTrackLength(){
 		return length;
 	}
@@ -99,5 +126,20 @@ public class Song extends Media {
 
 	public void setOriginalAlbum(String a){
 		this.originalAlbum = a;
+	}
+
+	@Override
+	public boolean equals(Object o){
+		if(o instanceof Song){
+			// If the file is the same, the two Songs must be the same, regardless of what their fields have been changed to
+			return ((Song) o).file.equals(this.file)
+		}
+		return false
+	}
+
+	@Override
+	public int hashCode(){
+		// Because file is the only factor in equals, it should be the only factor here.
+		return this.file.hashCode();
 	}
 }

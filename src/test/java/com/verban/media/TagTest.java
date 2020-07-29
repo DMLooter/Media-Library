@@ -38,7 +38,7 @@ public class TagTest {
 	@Test
 	public void test002_Tag_Read_mp3(){
 		try{
-			Song s = new Song(new File("/Users/michael/WORKSPACES/Media/media-library/src/test/java/com/verban/media/test.mp3"));
+			Song s = new Song(new File("src/test/java/com/verban/media/test.mp3"));
 
 			assertEquals("Test MP3", s.getTitle());
 			assertEquals(30, s.getTrackLength());
@@ -49,6 +49,26 @@ public class TagTest {
 		}catch(IOException e){
 			e.printStackTrace();
 			fail("Exception thrown when not expected in Test002");
+		}
+	}
+	@Test
+	public void test003_Set_Add_Artists_Media(){
+		try{
+			Song s = new Song(new File("src/test/java/com/verban/media/test.mp3"));
+
+			s.setArtists("Verban", "Michael");
+			s.addArtist("Tester");
+			s.addArtist(" ");
+
+			String[] art = s.getArtists();
+
+			assertEquals("Verban",art[0]);
+			assertEquals("Michael",art[1]);
+			assertEquals("Tester",art[2]);
+			assertEquals(" ",art[3]);
+		}catch(Exception e){
+			e.printStackTrace();
+			fail("Exception thrown when not expected in Test003");
 		}
 	}
 }

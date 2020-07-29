@@ -36,7 +36,7 @@ public class Artist{
 	}
 
 	/**
-	* Attempts to retrieve the album with the specified name if it exists in this authors list
+	* Attempts to retrieve the album with the specified name if it exists in this artists list
 	* @param name the name of the album to attempt to retrieve
 	* @return the album object with the given name, if it exits, otherwise null
 	*/
@@ -62,7 +62,7 @@ public class Artist{
 	}
 
 	/**
-	* Attempts to retrieve the song with the specified name if it exists in this authors list
+	* Attempts to retrieve the song with the specified name if it exists in this artists list
 	* @param name the name of the song to attempt to retrieve
 	* @return the song object with the given name, if it exits, otherwise null
 	*/
@@ -73,5 +73,20 @@ public class Artist{
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public boolean equals(Object o){
+		if(o instanceof Artist){
+			// An artists name is all that reallistically matters.
+			// This way we can quickly make dummy artist objects.
+			return ((Artist) o).name.equals(this.name);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode(){
+		return this.name.hashCode();
 	}
 }
