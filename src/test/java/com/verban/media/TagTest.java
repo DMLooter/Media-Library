@@ -51,6 +51,7 @@ public class TagTest {
 			fail("Exception thrown when not expected in Test002");
 		}
 	}
+	
 	@Test
 	public void test003_Set_Add_Artists_Media(){
 		try{

@@ -132,9 +132,9 @@ public class Song extends Media {
 	public boolean equals(Object o){
 		if(o instanceof Song){
 			// If the file is the same, the two Songs must be the same, regardless of what their fields have been changed to
-			return ((Song) o).file.equals(this.file)
+			return ((Song) o).file.equals(this.file);
 		}
-		return false
+		return false;
 	}
 
 	@Override

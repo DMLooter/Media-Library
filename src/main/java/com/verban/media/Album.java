@@ -28,7 +28,7 @@ public class Album extends Media {
 	* @param artists the artists that contributed to this Album
 	*/
 	public Album(String title, Song[] tracks, int year, String... artists){
-		this.title = title
+		this.title = title;
 		this.tracks = tracks;
 		this.year = year;
 		this.artists = artists;
@@ -57,7 +57,7 @@ public class Album extends Media {
 			return false;
 
 		tracks[n-1] = s;
-		reutnr true;
+		return true;
 	}
 
 	/**
