@@ -144,6 +144,19 @@ public class Library {
 	}
 
 	/**
+	* Tests whether a playlist with the given name exists already in this library.
+	* @return true if there is a playlist with the given name, false otherwise
+	*/
+	public boolean playlistExists(String name){
+		for(Playlist p : playlists){
+			if(p.getTitle().equals(name)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	* Attempts to add the specified song to the library, along with the Artist(s) who made it, and
 	* the album it is a part of, if those are specified.
 	* @param s the song to add.
@@ -210,5 +223,13 @@ public class Library {
 				}
 			}
 		}
+	}
+
+	/**
+	* Creates a new playlist with the given name.
+	*/
+	public void createPlaylist(String name){
+		Playlist p = new Playlist(name);
+		playlists.add(p);
 	}
 }

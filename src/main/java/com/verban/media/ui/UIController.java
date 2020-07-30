@@ -2,12 +2,14 @@ package com.verban.media.ui;
 
 import com.verban.media.*;
 
+import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.*;
 import javafx.stage.*;
 import javafx.collections.*;
+import javafx.geometry.Pos;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import java.net.*;
@@ -88,6 +90,7 @@ public class UIController{
 	private void linkLists(){
 		songList.setItems(library.getSongs());
 
+		//Set up columns for the table.
 		TableColumn<Song, String> titleColumn = new TableColumn<>("Title");
 		titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
 
@@ -111,13 +114,38 @@ public class UIController{
 				Album selAlbum = selected.get(0);
 				albumSongList.getItems().clear();
 				albumSongList.getItems().addAll(selAlbum.getAllTracks());
-				System.out.println(Arrays.toString(selAlbum.getAllTracks()));
+				albumSongList.getItems().removeAll(Song.PLACEHOLDER_LIST);
 			}else{
 				albumSongList.getItems().clear();
 			}
 		});
 		artistList.setItems(library.getArtists());
+		artistList.setOnMouseClicked(e -> {
+			ObservableList<Artist> selected = artistList.getSelectionModel().getSelectedItems();
+			if(selected.size() > 0){
+				Artist selArtist = selected.get(0);
+				artistSongList.getItems().clear();
+				artistSongList.getItems().addAll(selArtist.getAllSongs());
+				for(Album a : selArtist.getAllAlbums()){
+					artistSongList.getItems().addAll(a.getAllTracks());
+				}
+				albumSongList.getItems().removeAll(Song.PLACEHOLDER_LIST);
+			}else{
+				albumSongList.getItems().clear();
+			}
+		});
+
 		playlistList.setItems(library.getPlaylists());
+		playlistList.setOnMouseClicked(e -> {
+			ObservableList<Playlist> selected = playlistList.getSelectionModel().getSelectedItems();
+			if(selected.size() > 0){
+				Playlist selPlaylist = selected.get(0);
+				playlistSongList.getItems().clear();
+				playlistSongList.getItems().addAll(selPlaylist.getAllTracks());
+			}else{
+				playlistSongList.getItems().clear();
+			}
+		});
 	}
 
 	/**
@@ -213,5 +241,83 @@ public class UIController{
 			}
 		}
 		return read;
+	}
+
+	@FXML
+	public void createPlaylist(){
+		Stage popup = new Stage();
+		popup.initOwner(mainStage);
+		//Make sure it blocks the main application window while showing
+		popup.initModality(Modality.WINDOW_MODAL);
+
+		VBox all = new VBox();
+		all.setAlignment(Pos.CENTER);
+		//Label at the top to describe the function of this pop-up
+		Label top = new Label("Create a new Playlist");
+		all.getChildren().add(top);
+
+		// Manually input Farm ID
+		HBox nameBox = new HBox();
+		Label nameLabel = new Label("Name: ");
+		TextField nameInput = new TextField();
+		nameBox.getChildren().add(nameLabel);
+		nameBox.getChildren().add(nameInput);
+		nameBox.setAlignment(Pos.CENTER);
+		all.getChildren().add(nameBox);
+
+		Label message = new Label();
+		all.getChildren().add(message);
+
+
+		HBox buttons = new HBox();
+
+		Button create = new Button("Create");
+		// Make the button indicate what is missing or invalid before adding anything
+		create.setOnAction(e -> {
+			if (nameInput.getText().isBlank()) { // farmID missing
+				nameLabel.setUnderline(true);
+			} else {
+				String name = nameInput.getText();
+				if(library.playlistExists(name)){
+					message.setText("That playlist already exists.");
+				}else{
+					popup.close();
+					library.createPlaylist(name);
+				}
+			}
+		});
+
+		Button cancel = new Button("Cancel");
+		cancel.setOnAction(e -> popup.close());
+
+		buttons.getChildren().addAll(create, cancel);
+		buttons.setAlignment(Pos.CENTER);
+
+		all.getChildren().add(buttons);
+
+		Scene s = new Scene(all, 300, 100);
+
+		popup.setScene(s);
+		popup.showAndWait();
+	}
+
+	/*@FXML
+	public void editSelected(){
+		String selectedTab = tabs.getSelectionModel().getSelectedItem().getText();
+		if(selectedTab.equals("Songs")){
+
+			showSongEditDialog()
+		}
+	}*/
+
+	@FXML
+	public void attemptClose(){
+		Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+			"Are you sure you want to exit?");
+		//This tests that the user clicked the OK button, and no other one.
+		boolean exit = alert.showAndWait().filter(e -> e.equals(ButtonType.OK)).isPresent();
+		if(exit){
+			Platform.exit();
+		}
 	}
 }

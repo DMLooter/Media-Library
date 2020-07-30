@@ -23,6 +23,14 @@ public class Playlist implements Serializable{
 		tracks = new ArrayList<Song>();
 	}
 
+	public void setTitle(String title){
+		this.title = title;
+	}
+
+	public String getTitle(){
+		return title;
+	}
+
 	/**
 	* Returns the nth track in this Playlist, or null if n is outside of the range of tracks
 	* @param n the number of track to get, 1-INDEXED!
@@ -63,7 +71,7 @@ public class Playlist implements Serializable{
 	public boolean equals(Object o){
 		if(o instanceof Playlist){
 			Playlist p = (Playlist)o;
-			// Two equal albums will have the same name and tracks.
+			// Two equal playlists will have the same name and tracks.
 			return p.title.equals(this.title) && p.tracks.equals(this.tracks);
 		}
 		return false;
@@ -72,5 +80,10 @@ public class Playlist implements Serializable{
 	@Override
 	public int hashCode(){
 		return this.title.hashCode() ^ this.tracks.size();
+	}
+
+	@Override
+	public String toString(){
+		return title;
 	}
 }

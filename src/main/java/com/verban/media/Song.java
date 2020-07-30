@@ -17,11 +17,15 @@ public class Song extends Media {
 	* Placeholder song to use in albums where some songs are missing.
 	*/
 	public static final Song PLACEHOLDER;
+	// List containing just the placeholder, for use with removeAll operations in Lists.
+	public static final List<Song> PLACEHOLDER_LIST;
 
 	static{
 		PLACEHOLDER = new Song();
 		PLACEHOLDER.title = "";
 		PLACEHOLDER.file = new File("");
+		PLACEHOLDER_LIST = new LinkedList<Song>();
+		PLACEHOLDER_LIST.add(PLACEHOLDER);
 	}
 
 	private static final long serialVersionUID=234768901L;
