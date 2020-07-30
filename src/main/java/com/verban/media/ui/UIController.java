@@ -23,12 +23,19 @@ public class UIController{
 	private Scene mainScene;
 	private Stage mainStage;
 
+	@FXML
 	private ListView songList;
+	@FXML
 	private ListView albumList;
+	@FXML
 	private ListView albumSongList;
+	@FXML
 	private ListView artistList;
+	@FXML
 	private ListView artistSongList;
+	@FXML
 	private ListView playlistList;
+	@FXML
 	private ListView playlistSongList;
 
 	private FileChooser libraryChooser;
@@ -76,7 +83,10 @@ public class UIController{
 	* This should only need to be called once at the creation of the UI, but subsequent calls should not break anything.
 	*/
 	private void linkLists(){
-		songList.setItems(Library)
+		songList.setItems(library.getSongs());
+		albumList.setItems(library.getAlbums());
+		artistList.setItems(library.getArtists());
+		playlistList.setItems(library.getPlaylists());
 	}
 
 	@FXML
