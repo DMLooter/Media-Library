@@ -89,35 +89,71 @@ public class UIController{
 		playlistList.setItems(library.getPlaylists());
 	}
 
+	/**
+	* Attempts to load in a library file specified by the user.
+	*/
 	@FXML
 	public void loadLibrary(){
 		File libFile = libraryChooser.showOpenDialog(mainStage);
-		try{
-			library.load(libFile);
-			Alert alert = new Alert(Alert.AlertType.INFORMATION, "Sucessfully loaded library");
-			alert.showAndWait();
-		}catch(FileFormatException e){
-			Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
-			alert.showAndWait();
-		}catch(IOException e){
-			Alert alert = new Alert(Alert.AlertType.ERROR, "Read Failed: " + e.getMessage());
-			alert.showAndWait();
+		if(libFile != null){
+			try{
+				library.load(libFile);
+				Alert alert = new Alert(Alert.AlertType.INFORMATION, "Sucessfully loaded library");
+				alert.showAndWait();
+			}catch(FileFormatException e){
+				Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+				alert.showAndWait();
+			}catch(IOException e){
+				Alert alert = new Alert(Alert.AlertType.ERROR, "Read Failed: " + e.getMessage());
+				alert.showAndWait();
+			}
+		}
+	}
+
+	/**
+	* Attempts to save teh current libary to a file specified by the user.
+	*/
+	@FXML
+	public void saveLibrary(){
+		File libFile = libraryChooser.showSaveDialog(mainStage);
+		if(libFile != null){
+			try{
+				library.save(libFile);
+				Alert alert = new Alert(Alert.AlertType.INFORMATION, "Sucessfully saved library");
+				alert.showAndWait();
+			}catch(FileFormatException e){
+				Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+				alert.showAndWait();
+			}catch(IOException e){
+				Alert alert = new Alert(Alert.AlertType.ERROR, "Save Failed: " + e.getMessage());
+				alert.showAndWait();
+			}
+		}
+	}
+
+	/**
+	* Attempts to import a single media file
+	*/
+	@FXML
+	public void importFile(){
+		File mediaFile = mediaChooser.showOpenDialog(mainStage);
+		if(mediaFile != null){
+			try{
+				System.out.println(mediaFile);
+				Song s = new Song(mediaFile);
+				System.out.println("Loaded file");
+				library.addSong(s);
+				System.out.println(library.getSongs());
+			}catch(FileFormatException e){
+				Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+				alert.showAndWait();
+			}catch(IOException e){
+				Alert alert = new Alert(Alert.AlertType.ERROR, "Import Failed: " + e.getMessage());
+				alert.showAndWait();
+			}
 		}
 	}
 
 	@FXML
-	public void saveLibrary(){
-		File libFile = libraryChooser.showSaveDialog(mainStage);
-		try{
-			library.save(libFile);
-			Alert alert = new Alert(Alert.AlertType.INFORMATION, "Sucessfully saved library");
-			alert.showAndWait();
-		}catch(FileFormatException e){
-			Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
-			alert.showAndWait();
-		}catch(IOException e){
-			Alert alert = new Alert(Alert.AlertType.ERROR, "Read Failed: " + e.getMessage());
-			alert.showAndWait();
-		}
-	}
+	public void importFolder(){}
 }

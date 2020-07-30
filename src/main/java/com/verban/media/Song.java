@@ -39,16 +39,18 @@ public class Song extends Media {
 			throw new FileFormatException("Not a file");
 		String s = file.getName().substring(file.getName().lastIndexOf(".")+1);
 		if(!(s.equalsIgnoreCase("mp3") || s.equalsIgnoreCase("wav") || s.equalsIgnoreCase("wma") ||
-			s.equalsIgnoreCase("acc") || s.equalsIgnoreCase("flac") || s.equalsIgnoreCase("ogg"))){
+			s.equalsIgnoreCase("acc") || s.equalsIgnoreCase("flac") || s.equalsIgnoreCase("ogg") ||
+			s.equalsIgnoreCase("m4a"))){
 			throw new FileFormatException(
-				"Not an accepted File type, valid song filetypes are mp3,wav,wma,acc,flac,ogg");
+				"Not an accepted File type, valid song filetypes are mp3,wav,wma,acc,flac,ogg,m4a");
 		}
 		this.file = file;
 		// Default the title to the name of the file
 		this.title = file.getName();
 		try{
 			parseTags();
-		}catch(CannotReadException e){
+		}catch(NoClassDefFoundError | CannotReadException e){
+			e.printStackTrace();
 			throw new IOException("File cannot be read at all.");
 		}
 	}
@@ -58,28 +60,37 @@ public class Song extends Media {
 	*/
 	private void parseTags() throws CannotReadException, IOException{
 		try{
+					System.out.println(1);
 			AudioFile f = AudioFileIO.read(file);
+					System.out.println("file read");
 			Tag tag = f.getTag();
 			AudioHeader head = f.getAudioHeader();
+					System.out.println("tag read");
 
 			this.length = head.getTrackLength();
 
 			this.title = tag.getFirst(FieldKey.TITLE);
-			// Artists could be multiple, so we have to get the list of TagFields and map them to strings
-			// They are in a wierd format after toString, so some processing is required.
-			this.artists = tag.getFields(FieldKey.ARTIST).stream().map(e->e.toString())
-				.map(e->e.substring(e.indexOf('"')+1, e.lastIndexOf('"')).trim())
-				.collect(Collectors.toList()).toArray(new String[1]);
+
+			this.artist = tag.getFirst(FieldKey.ARTIST);
 			try{
 				this.year = Integer.parseInt(tag.getFirst(FieldKey.YEAR));
 			}catch(NumberFormatException e){
-				// If we fail, just leave it blank
+				this.year = 0;
 			}
 			this.genre = tag.getFirst(FieldKey.GENRE);
 			this.originalAlbum = tag.getFirst(FieldKey.ALBUM);
 
-			this.albumTrackNumber = tag.getFirst(FieldKey.TRACK);
-			this.albumTracks = tag.getFirst(FieldKey.TRACK_TOTAL);
+			try{
+				this.albumTrackNumber = Integer.parseInt(tag.getFirst(FieldKey.TRACK));
+			}catch(NumberFormatException e){
+				this.albumTrackNumber = 0;
+			}
+			try{
+				this.albumTracks = Integer.parseInt(tag.getFirst(FieldKey.TRACK_TOTAL));
+			}catch(NumberFormatException | UnsupportedOperationException e ){
+				this.albumTracks = 0;
+			}
+					System.out.println("fully loaded");
 
 
 		}catch(ArrayStoreException | TagException | ReadOnlyFileException | InvalidAudioFrameException e){
@@ -100,19 +111,15 @@ public class Song extends Media {
 			AudioFile f = AudioFileIO.read(file);
 			Tag tag = f.getTag();
 			tag.setField(FieldKey.TITLE, this.title);
-
-			tag.deleteField(FieldKey.ARTIST);
-			for(String a : this.artists){
-				tag.addField(FieldKey.ARTIST, a);
-			}
+			tag.setField(FieldKey.ARTIST, artist);
 
 			tag.setField(FieldKey.YEAR, ""+this.year);
 
 			tag.setField(FieldKey.ALBUM, this.originalAlbum);
 			tag.setField(FieldKey.GENRE, this.genre);
 
-			tag.setField(FieldKey.TRACK,this.albumTrackNumber);
-			tag.setField(FieldKey.TRACK_TOTAL,this.albumTracks);
+			tag.setField(FieldKey.TRACK,this.albumTrackNumber+"");
+			tag.setField(FieldKey.TRACK_TOTAL,this.albumTracks+"");
 
 		}catch(IOException | CannotReadException | TagException | ReadOnlyFileException | InvalidAudioFrameException e){
 			return false;
@@ -138,6 +145,28 @@ public class Song extends Media {
 
 	public void setOriginalAlbum(String a){
 		this.originalAlbum = a;
+	}
+
+	/**
+	* Returns the track number of this song on the album it is from.
+	*/
+	public int getAlbumTrackNumber(){
+		return albumTrackNumber;
+	}
+
+	public void setAlbumTrackNumber(int trackNum){
+		this.albumTrackNumber = trackNum;
+	}
+
+	/**
+	* Returns the number of tracks on the album this song is from.
+	*/
+	public int getAlbumTracks(){
+		return albumTracks;
+	}
+
+	public void setAlbumTracks(int albumTracks){
+		this.albumTracks = albumTracks;
 	}
 
 	@Override

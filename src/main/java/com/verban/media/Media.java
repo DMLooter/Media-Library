@@ -16,8 +16,8 @@ public abstract class Media implements Serializable{
 
 	// Title of the piece of media
 	protected String title;
-	// List of Artists who contributed to this piece of media
-	protected String[] artists;
+	// Name of Artist who created to this piece of media
+	protected String artist;
 	// Year this media was created
 	protected int year;
 	// Five star rating of this piece of media
@@ -32,26 +32,17 @@ public abstract class Media implements Serializable{
 	}
 
 	/**
-	* Clears the current artists of this media and replaces them with those passed in.
-	* @param artists the new list of artists for this media
+	* Sets the name of the artist of this media.
 	*/
-	public void setArtists(String... artists){
-		this.artists = artists;
+	public void setArtist(String artist){
+		this.artist = artist;
 	}
 
 	/**
-	* Adds a single artist to this piece of media
+	* Returns the name of the artist for this media.
 	*/
-	public void addArtist(String artist){
-		this.artists = Arrays.copyOf(this.artists, this.artists.length + 1);
-		this.artists[this.artists.length-1] = artist;
-	}
-
-	/**
-	* Returns a copy of the list of artists for this media.
-	*/
-	public String[] getArtists(){
-		return Arrays.copyOf(artists, artists.length);
+	public String getArtist(){
+		return artist;
 	}
 
 	public void setYear(int year){

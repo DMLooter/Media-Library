@@ -19,8 +19,8 @@ public class Album extends Media {
 	* @param year the year this Album was published
 	* @param artists the artists that contributed to this Album
 	*/
-	public Album(String title, int tracks, int year, String... artists){
-		this(title, new Song[tracks], year, artists);
+	public Album(String title, int tracks, int year, String artist){
+		this(title, new Song[tracks], year, artist);
 	}
 
 	/**
@@ -30,11 +30,11 @@ public class Album extends Media {
 	* @param year the year this Album was published
 	* @param artists the artists that contributed to this Album
 	*/
-	public Album(String title, Song[] tracks, int year, String... artists){
+	public Album(String title, Song[] tracks, int year, String artist){
 		this.title = title;
 		this.tracks = tracks;
 		this.year = year;
-		this.artists = artists;
+		this.artist = artist;
 	}
 
 	/**
@@ -69,6 +69,13 @@ public class Album extends Media {
 	*/
 	public Song[] getAllTracks(){
 		return Arrays.copyOf(tracks, tracks.length);
+	}
+
+	/**
+	* Returns the number of tracks on this album.
+	*/
+	public int numTracks(){
+		return tracks.length;
 	}
 
 	@Override

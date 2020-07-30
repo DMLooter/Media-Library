@@ -31,6 +31,13 @@ public class Artist implements Serializable{
 		return albums.toArray(new Album[0]);
 	}
 
+	/**
+	* Returns true if an album with the same name, year, and number of tracks exists in this Artists' list
+	*/
+	public boolean hasAlbum(Album a){
+		return albums.contains(a);
+	}
+
 	public void addAlbum(Album a){
 		albums.add(a);
 	}

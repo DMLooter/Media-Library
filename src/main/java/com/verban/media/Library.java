@@ -142,4 +142,73 @@ public class Library {
 	public ObservableList<Playlist> getPlaylists(){
 		return playlists;
 	}
+
+	/**
+	* Attempts to add the specified song to the library, along with the Artist(s) who made it, and
+	* the album it is a part of, if those are specified.
+	* @param s the song to add.
+	*/
+	public void addSong(Song s){
+		// These are flags so wwe can add the album to the artist's list if need be
+		Album orig = null;
+		boolean albumValid = false;//TODO could remove flag and just check if orig is null.
+
+		if(!songs.contains(s)){ // If the file already exists in this library, dont add it
+			songs.add(s);
+			if(s.getOriginalAlbum() != null && !s.getOriginalAlbum().equals("")){
+				// see if the album exists, if not, create it.
+				boolean exists = false;
+				for(Album a: albums){
+					if(a.getTitle().equals(s.getOriginalAlbum())){
+						if(a.numTracks() == s.getAlbumTracks() || a.getYear() == s.getYear() || a.getArtist() == s.getArtist()){
+							exists = true;
+							orig = a;
+							albumValid = true;
+							// If any of those three are equal, it is highly likely it is the correct album.
+							a.setTrack(s, s.getAlbumTrackNumber()); // This will fail if out of range or not set.
+							break; // no need to keep searching through albums.
+						}
+					}
+				}
+				if(!exists){ // If it doesnt exist, we can try to make a new one
+					// But only if we have the minimum right information.
+					if(s.getAlbumTrackNumber() != 0 && s.getAlbumTracks() != 0){
+						orig = new Album(s.getOriginalAlbum(), s.getAlbumTracks(), s.getYear(), s.getArtist());
+						albumValid = true;
+						orig.setTrack(s, s.getAlbumTrackNumber());
+						albums.add(orig);
+					}
+				}
+			}
+
+			if(s.getArtist() != null && !s.getArtist().equals("")){
+				Artist test = new Artist(s.getArtist());
+				int i = -1;
+				if((i = artists.indexOf(test)) > -1){
+					// the artist exists
+					Artist real = artists.get(i);
+					if(albumValid){
+						// if the album was set, we need to check if the artist already has it
+						// If they do, we do nothing, the reference should have been updated already.
+						if(!real.hasAlbum(orig)){
+							// Otherwise we add it.
+							real.addAlbum(orig);
+						}
+					}else{
+						// Otherwise we add the song standalone
+						real.addSong(s);
+					}
+				}else{
+					//create the artist
+					Artist real = new Artist(s.getArtist());
+					if(albumValid){
+						real.addAlbum(orig);
+					}else{
+						real.addSong(s);
+					}
+					artists.add(real);
+				}
+			}
+		}
+	}
 }
