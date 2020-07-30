@@ -23,7 +23,8 @@ public class Song extends Media {
 	private String genre;
 	// The name of the  original Album which this recording of the song came from
 	private String originalAlbum;
-	//TODO maybe add track number on that album
+	//The track number, and number of tracks on the album this song comes from
+	private int albumTrackNumber, albumTracks;
 
 	/**
 	* Attempts to read in information from a file and populate this object.
@@ -43,6 +44,8 @@ public class Song extends Media {
 				"Not an accepted File type, valid song filetypes are mp3,wav,wma,acc,flac,ogg");
 		}
 		this.file = file;
+		// Default the title to the name of the file
+		this.title = file.getName();
 		try{
 			parseTags();
 		}catch(CannotReadException e){
@@ -75,6 +78,9 @@ public class Song extends Media {
 			this.genre = tag.getFirst(FieldKey.GENRE);
 			this.originalAlbum = tag.getFirst(FieldKey.ALBUM);
 
+			this.albumTrackNumber = tag.getFirst(FieldKey.TRACK);
+			this.albumTracks = tag.getFirst(FieldKey.TRACK_TOTAL);
+
 
 		}catch(ArrayStoreException | TagException | ReadOnlyFileException | InvalidAudioFrameException e){
 			e.printStackTrace();
@@ -104,6 +110,9 @@ public class Song extends Media {
 
 			tag.setField(FieldKey.ALBUM, this.originalAlbum);
 			tag.setField(FieldKey.GENRE, this.genre);
+
+			tag.setField(FieldKey.TRACK,this.albumTrackNumber);
+			tag.setField(FieldKey.TRACK_TOTAL,this.albumTracks);
 
 		}catch(IOException | CannotReadException | TagException | ReadOnlyFileException | InvalidAudioFrameException e){
 			return false;
