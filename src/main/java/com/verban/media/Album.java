@@ -92,4 +92,9 @@ public class Album extends Media {
 	public int hashCode(){
 		return this.title.hashCode() ^ this.year;
 	}
+
+	@Override
+	public String toString(){
+		return title;
+	}
 }

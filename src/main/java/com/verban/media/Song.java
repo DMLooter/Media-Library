@@ -183,4 +183,9 @@ public class Song extends Media {
 		// Because file is the only factor in equals, it should be the only factor here.
 		return this.file.hashCode();
 	}
+
+	@Override
+	public String toString(){
+		return title;
+	}
 }
