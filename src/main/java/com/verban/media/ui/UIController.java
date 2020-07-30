@@ -2,6 +2,8 @@ package com.verban.media.ui;
 
 import com.verban.media.*;
 
+import javafx.beans.binding.Bindings;
+
 import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -12,6 +14,7 @@ import javafx.collections.*;
 import javafx.geometry.Pos;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.util.Callback;
 import java.net.*;
 import java.io.*;
 import java.util.*;
@@ -27,6 +30,9 @@ public class UIController{
 
 	private Scene mainScene;
 	private Stage mainStage;
+
+	@FXML
+	private TabPane tabs;
 
 	@FXML
 	private TableView<Song> songList;
@@ -105,6 +111,29 @@ public class UIController{
 
 		songList.getColumns().addAll(titleColumn, artistColumn, albumColumn, runTimeColumn);
 
+		/*Setup the row factory to allow right clicking on individual rows
+		Taken and edited from
+		https://web.archive.org/web/20140406113922/https://www.marshall.edu/genomicjava/2013/12/30/javafx-tableviews-with-contextmenus/
+		*/
+		songList.setRowFactory(
+		    new Callback<TableView<Song>, TableRow<Song>>() {
+		        @Override
+		        public TableRow<Song> call(TableView<Song> tableView) {
+		            final TableRow<Song> row = new TableRow<>();
+		            final ContextMenu rowMenu = new ContextMenu();
+		            MenuItem editItem = new MenuItem("Edit");
+		            editItem.setOnAction(e->showSongEditDialog(row.getItem()));
+
+		            rowMenu.getItems().addAll(editItem);
+
+		            // only display context menu for non-empty rows:
+		            row.contextMenuProperty().bind(
+		              Bindings.when(row.emptyProperty())
+		              .then((ContextMenu)null)
+		              .otherwise(rowMenu));
+		            return row;
+		    	}
+			});
 
 
 		albumList.setItems(library.getAlbums());
@@ -147,6 +176,129 @@ public class UIController{
 			}
 		});
 	}
+
+	/**
+	* Creates and shows a dialog allowing the user to edit the tags of a song file
+	* @param song the song to edit
+	*/
+	private void showSongEditDialog(Song song){
+		Stage popup = new Stage();
+		popup.initOwner(mainStage);
+		//Make sure it blocks the main application window while showing
+		popup.initModality(Modality.WINDOW_MODAL);
+
+		VBox all = new VBox(10);
+		all.setAlignment(Pos.CENTER);
+		//Label at the top to describe the function of this pop-up
+		Label top = new Label("Edit Tags");
+		all.getChildren().add(top);
+
+
+		HBox titleBox = new HBox();
+		Label titleLabel = new Label("Title: ");
+		TextField titleInput = new TextField();
+		titleInput.setText(song.getTitle());
+		titleBox.getChildren().add(titleLabel);
+		titleBox.getChildren().add(titleInput);
+		titleBox.setAlignment(Pos.CENTER);
+		all.getChildren().add(titleBox);
+
+		HBox albumBox = new HBox();
+		Label albumLabel = new Label("Album: ");
+		TextField albumInput = new TextField();
+		albumInput.setText(song.getOriginalAlbum());
+		albumBox.getChildren().add(albumLabel);
+		albumBox.getChildren().add(albumInput);
+		albumBox.setAlignment(Pos.CENTER);
+		all.getChildren().add(albumBox);
+
+		HBox artistBox = new HBox();
+		Label artistLabel = new Label("Artist: ");
+		TextField artistInput = new TextField();
+		artistInput.setText(song.getArtist());
+		artistBox.getChildren().add(artistLabel);
+		artistBox.getChildren().add(artistInput);
+		artistBox.setAlignment(Pos.CENTER);
+		all.getChildren().add(artistBox);
+
+		HBox yearBox = new HBox();
+		Label yearLabel = new Label("Year: ");
+		Spinner yearInput = new Spinner(1000, 3000, song.getYear()); //TODO Yea this needs to be editable.....
+		yearInput.setPrefWidth(90);
+		yearBox.getChildren().add(yearLabel);
+		yearBox.getChildren().add(yearInput);
+		yearBox.setAlignment(Pos.CENTER);
+		all.getChildren().add(yearBox);
+
+		HBox genreBox = new HBox();
+		Label genreLabel = new Label("Genre: ");
+		TextField genreInput = new TextField();
+		genreInput.setText(song.getGenre());
+		genreBox.getChildren().add(genreLabel);
+		genreBox.getChildren().add(genreInput);
+		genreBox.setAlignment(Pos.CENTER);
+		all.getChildren().add(genreBox);
+
+		/*HBox trackNumBox = new HBox();
+		Label trackLabel = new Label("Track number ");
+		Spinner trackInput = new Spinner(1,100, song.getAlbumTrackNumber());
+		trackInput.setPrefWidth(70);
+		Label outOfLabel = new Label(" out of ");
+		Spinner numTracksInput = new Spinner(1,100, song.getAlbumTracks());
+		numTracksInput.setPrefWidth(70);
+		trackNumBox.getChildren().addAll(trackLabel, trackInput, outOfLabel, numTracksInput);
+		trackNumBox.setAlignment(Pos.CENTER);
+		all.getChildren().add(trackNumBox);*/
+
+
+		HBox buttons = new HBox();
+
+		Button save = new Button("Save");
+		// Make the button indicate what is missing or invalid before adding anything
+		save.setOnAction(e -> {
+			/* The steps to go through are:
+			* attempt to write the tags to the file by maing a new temp song object,
+			* 	editing the fields, and then saving the tags
+			* If that succedes,	tell the library to go through and update references, using the temp song
+			*/
+			try{
+				Song temp = new Song(song.getFile());
+				temp.setTitle(titleInput.getText());
+				temp.setOriginalAlbum(albumInput.getText());
+				temp.setArtist(artistInput.getText());
+				temp.setYear((Integer)yearInput.getValue());
+				temp.setGenre(genreInput.getText());
+				temp.setAlbumTrackNumber(song.getAlbumTrackNumber());
+				temp.setAlbumTracks(song.getAlbumTracks());
+
+				if(temp.writeTags()){
+					//Write succeded, commit to library
+					library.updateSong(song, temp);
+				}
+			}catch(IOException ex){
+				// Shouldnt happen, unless a file has moved in the file system.
+				// TODO make this more clear to end user when failed.
+				ex.printStackTrace();
+			}
+			popup.close();
+		});
+
+		Button cancel = new Button("Cancel");
+		cancel.setOnAction(e -> popup.close());
+
+		buttons.getChildren().addAll(save, cancel);
+		buttons.setAlignment(Pos.CENTER);
+
+		all.getChildren().add(buttons);
+
+		Scene s = new Scene(all, 300, 400);
+
+		popup.setScene(s);
+		popup.showAndWait();
+	}
+
+
+	/** MENU OPTIONS ***************************************************************************/
 
 	/**
 	* Attempts to load in a library file specified by the user.
@@ -256,7 +408,6 @@ public class UIController{
 		Label top = new Label("Create a new Playlist");
 		all.getChildren().add(top);
 
-		// Manually input Farm ID
 		HBox nameBox = new HBox();
 		Label nameLabel = new Label("Name: ");
 		TextField nameInput = new TextField();
@@ -300,15 +451,6 @@ public class UIController{
 		popup.setScene(s);
 		popup.showAndWait();
 	}
-
-	/*@FXML
-	public void editSelected(){
-		String selectedTab = tabs.getSelectionModel().getSelectedItem().getText();
-		if(selectedTab.equals("Songs")){
-
-			showSongEditDialog()
-		}
-	}*/
 
 	@FXML
 	public void attemptClose(){

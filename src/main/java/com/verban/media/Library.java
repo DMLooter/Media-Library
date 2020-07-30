@@ -5,6 +5,10 @@ import java.io.*;
 import javafx.collections.*;
 /**
 * Represents a collection of media (artists, albums, playlists, songs, videos, etc.)
+*
+* TODO: add a way of getting Song/Album/Artist/Playlist by just defining features, allowing the method to create them as needed.
+* TODO: add a validate/link method so that when the Library is deserialized, we can ensure that there is one instance of each song/album/artist/playlist that is coppied to all locations.
+*
 * @author Michael Verban (2020)
 */
 public class Library {
@@ -168,24 +172,44 @@ public class Library {
 
 		if(!songs.contains(s)){ // If the file already exists in this library, dont add it
 			songs.add(s);
-			if(s.getOriginalAlbum() != null && !s.getOriginalAlbum().equals("")){
+			if(s.getOriginalAlbum() != null && !s.getOriginalAlbum().isBlank() && s.getAlbumTrackNumber() > 0){
 				// see if the album exists, if not, create it.
 				boolean exists = false;
 				for(Album a: albums){
-					if(a.getTitle().equals(s.getOriginalAlbum())){
-						if(a.numTracks() == s.getAlbumTracks() || a.getYear() == s.getYear() || a.getArtist() == s.getArtist()){
+					if(a.getTitle().equals(s.getOriginalAlbum()) &&
+						(s.getYear() == 0 || a.getYear() == 0 || a.getYear() == s.getYear()) &&
+						(s.getArtist() == null || a.getArtist().isBlank() || s.getArtist().isBlank()
+						 || a.getArtist() == s.getArtist())){
+							// All three fields should match, but only if we actually have all three fields.
+							// If a field is missing in the song, it is okay for it to not match the album info.
 							exists = true;
 							orig = a;
 							albumValid = true;
-							// If any of those three are equal, it is highly likely it is the correct album.
-							a.setTrack(s, s.getAlbumTrackNumber()); // This will fail if out of range or not set.
+
+							a.setTrack(s, s.getAlbumTrackNumber());
+							// If we can, we might as well update the album if the song has more info
+							if(a.getArtist().isBlank() && !s.getArtist().isBlank()){
+								a.setArtist(s.getArtist());
+							}
+							if(a.getYear() ==0 && s.getYear() != 0){
+								a.setYear(s.getYear());
+							}
+
+							// And vice versa
+							if(s.getArtist().isBlank() && !a.getArtist().isBlank()){
+								s.setArtist(a.getArtist());
+							}
+							if(s.getYear() ==0 && a.getYear() != 0){
+								s.setYear(a.getYear());
+							}
+
+
 							break; // no need to keep searching through albums.
-						}
 					}
 				}
 				if(!exists){ // If it doesnt exist, we can try to make a new one
 					// But only if we have the minimum right information.
-					if(s.getAlbumTrackNumber() != 0 && s.getAlbumTracks() != 0){
+					if(s.getAlbumTrackNumber() > 0 && s.getAlbumTracks() > 0 && s.getAlbumTrackNumber() < s.getAlbumTracks()){
 						orig = new Album(s.getOriginalAlbum(), s.getAlbumTracks(), s.getYear(), s.getArtist());
 						albumValid = true;
 						orig.setTrack(s, s.getAlbumTrackNumber());
@@ -194,7 +218,7 @@ public class Library {
 				}
 			}
 
-			if(s.getArtist() != null && !s.getArtist().equals("")){
+			if(s.getArtist() != null && !s.getArtist().isBlank()){
 				Artist test = new Artist(s.getArtist());
 				int i = -1;
 				if((i = artists.indexOf(test)) > -1){
@@ -221,6 +245,85 @@ public class Library {
 					}
 					artists.add(real);
 				}
+			}
+		}
+	}
+
+	/**
+	* Updates all references to old to have the data contained in new. Additionally adjusts the album
+	* that contained old (if any) to reflect the new information shown in new regarding number of tracks.
+	* @param oldSong the song to be replaced
+	* @param newSong the song to replace it with.
+	*/
+	public void updateSong(Song oldSong, Song newSong){
+		// Replace in songs list
+		songs.remove(oldSong);
+		songs.add(newSong);
+
+		Album newAlbum = null;
+
+		//If album changed, remove it from the old one and add it to the new one
+		if(!oldSong.getOriginalAlbum().equals(newSong.getOriginalAlbum())){
+			for(Album oldAlbum : albums){
+				if(oldAlbum.getTitle().equals(oldSong.getOriginalAlbum()) && oldAlbum.getArtist().equals(oldSong.getArtist())){
+					oldAlbum.setTrack(Song.PLACEHOLDER, oldSong.getAlbumTrackNumber());
+				}
+			}
+
+			// adding will only happen if the new album has a name.
+			if(!newSong.getOriginalAlbum().isBlank()){
+				boolean exists = false;
+				for(Album existAlbum : albums){
+					if(existAlbum.getTitle().equals(newSong.getOriginalAlbum()) && existAlbum.getArtist().equals(newSong.getArtist())){
+						exists = true;
+						existAlbum.setTrack(newSong, newSong.getAlbumTrackNumber());
+					}
+				}
+				// here we must make a new album for the new song
+				if(!exists){
+					newAlbum = new Album(newSong.getOriginalAlbum(), newSong.getAlbumTracks(), newSong.getYear(), newSong.getArtist());
+					newAlbum.setTrack(newSong, newSong.getAlbumTrackNumber());
+					albums.add(newAlbum);
+				}
+			}
+		}
+
+		// If artist changed, and either old or new had no album, we need to update the artist's song list
+		if(!oldSong.getArtist().equals(newSong.getArtist())){
+			if(oldSong.getOriginalAlbum().isBlank()){
+				for(Artist oldArtist : artists){
+					if(oldArtist.getName().equals(oldSong.getArtist())){
+						oldArtist.removeSong(oldSong);
+					}
+				}
+			}
+
+			// Regardless of if the new one has an album, we need to make sure the artist exists.
+			Artist test = new Artist(newSong.getArtist());
+			int i = -1;
+			if((i = artists.indexOf(test)) > -1){
+				// the artist exists
+				Artist real = artists.get(i);
+				if(oldSong.getOriginalAlbum().isBlank()){
+					// If no album, just add the song
+					real.addSong(newSong);
+				}else{
+					// if yes album, we need to check if it is new
+					// If yes, add it.
+					if(newAlbum != null){
+						real.addAlbum(newAlbum);
+					}
+				}
+			}else{
+				Artist real = new Artist(newSong.getArtist());
+				if(oldSong.getOriginalAlbum().isBlank()){
+					// If no album, just add the song
+					real.addSong(newSong);
+				}else{
+					// if yes album, add it.
+					real.addAlbum(newAlbum);
+				}
+				artists.add(real);
 			}
 		}
 	}
