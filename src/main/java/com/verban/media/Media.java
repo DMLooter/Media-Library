@@ -15,11 +15,11 @@ public abstract class Media implements Serializable{
 
 
 	// Title of the piece of media
-	protected String title;
+	protected String title = "";
 	// Name of Artist who created to this piece of media
-	protected String artist;
+	protected String artist = "";
 	// Year this media was created
-	protected int year;
+	protected int year = 0;
 	// Five star rating of this piece of media
 	private double rating = 0;
 

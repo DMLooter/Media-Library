@@ -60,7 +60,7 @@ public class UIController{
 		libraryChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Library Files", "*.library"));
 		libraryChooser.setInitialDirectory(new File(System.getProperty("user.home")+"/Music"));
 		mediaChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Audio Files",
-			"*.mp3", "*.wav","*.wma","*.aac", "*.m4a","*.flac","*.ogg"));
+			"*.mp3", "*.wma","*.aac", "*.m4a","*.flac","*.ogg"));
 		mediaChooser.setInitialDirectory(new File(System.getProperty("user.home")+"/Music"));
 		folderChooser.setInitialDirectory(new File(System.getProperty("user.home")+"/Music"));
 

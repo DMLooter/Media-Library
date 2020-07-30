@@ -39,7 +39,7 @@ public class Album extends Media {
 	public Album(String title, Song[] tracks, int year, String artist){
 		this.title = title;
 		this.tracks = new ArrayList<Song>();
-		this.tracks.addAll(tracks);
+		this.tracks.addAll(Arrays.asList(tracks));
 		this.year = year;
 		this.artist = artist;
 	}
@@ -92,7 +92,7 @@ public class Album extends Media {
 		if(o instanceof Album){
 			Album a = (Album)o;
 			// Two equal albums will have the same title, year, and artist.
-			return a.title.equals(this.title) && a.year == this.year;
+			return a.title.equals(this.title) && a.year == this.year && a.artist.equals(this.artist);
 		}
 		return false;
 	}

@@ -7,7 +7,7 @@ import org.jaudiotagger.audio.*;
 import org.jaudiotagger.audio.exceptions.*;
 import org.jaudiotagger.tag.*;
 /**
-* Represents a single song held in an audio file. Must point to a valid audio file in the MP3, WAV, WMA, ACC, FLAC, or OGG formats.
+* Represents a single song held in an audio file. Must point to a valid audio file in the MP3, m4a, WMA, ACC, FLAC, or OGG formats.
 *
 * @author Michael Verban (2020)
 */
@@ -31,15 +31,15 @@ public class Song extends Media {
 	private static final long serialVersionUID=234768901L;
 
 	// Runtime in seconds
-	private int runtime;
+	private int runtime = 0;
 	// File where this song is
 	private File file;
 	// Genre of the song
-	private String genre;
+	private String genre = "";
 	// The name of the  original Album which this recording of the song came from
-	private String originalAlbum;
+	private String originalAlbum = "";
 	//The track number, and number of tracks on the album this song comes from
-	private int albumTrackNumber, albumTracks;
+	private int albumTrackNumber=0, albumTracks=0;
 
 	private Song(){}
 
@@ -55,11 +55,10 @@ public class Song extends Media {
 		if(!file.isFile())
 			throw new FileFormatException("Not a file");
 		String s = file.getName().substring(file.getName().lastIndexOf(".")+1);
-		if(!(s.equalsIgnoreCase("mp3") || s.equalsIgnoreCase("wav") || s.equalsIgnoreCase("wma") ||
-			s.equalsIgnoreCase("acc") || s.equalsIgnoreCase("flac") || s.equalsIgnoreCase("ogg") ||
-			s.equalsIgnoreCase("m4a"))){
+		if(!(s.equalsIgnoreCase("mp3") || s.equalsIgnoreCase("m4a") || s.equalsIgnoreCase("wma") ||
+			s.equalsIgnoreCase("acc") || s.equalsIgnoreCase("flac") || s.equalsIgnoreCase("ogg"))) {
 			throw new FileFormatException(
-				"Not an accepted File type, valid song filetypes are mp3,wav,wma,acc,flac,ogg,m4a");
+				"Not an accepted File type, valid song filetypes are mp3,wma,acc,flac,ogg,m4a");
 		}
 		this.file = file;
 		// Default the title to the name of the file
@@ -81,6 +80,10 @@ public class Song extends Media {
 			AudioFile f = AudioFileIO.read(file);
 					System.out.println("file read");
 			Tag tag = f.getTag();
+
+			if(tag == null)
+				throw new IOException("Tag missing");//TODO make this work regardless
+
 			AudioHeader head = f.getAudioHeader();
 					System.out.println("tag read");
 
@@ -123,7 +126,7 @@ public class Song extends Media {
 	* Takes the metadata that this file has been given and writes it back to the file.
 	* @return true if write fully succeded, false otherwise. Note that even on a false return, some data may be modified.
 	*/
-	public boolean writeMetaData(){
+	public boolean writeTags(){
 		try{
 			AudioFile f = AudioFileIO.read(file);
 			Tag tag = f.getTag();
@@ -138,7 +141,9 @@ public class Song extends Media {
 			tag.setField(FieldKey.TRACK,this.albumTrackNumber+"");
 			tag.setField(FieldKey.TRACK_TOTAL,this.albumTracks+"");
 
-		}catch(IOException | CannotReadException | TagException | ReadOnlyFileException | InvalidAudioFrameException e){
+			f.commit();
+
+		}catch(IOException | CannotReadException | TagException | ReadOnlyFileException | InvalidAudioFrameException | CannotWriteException e){
 			return false;
 		}
 		return true;
@@ -146,6 +151,10 @@ public class Song extends Media {
 
 	public int getRuntime(){
 		return runtime;
+	}
+
+	public File getFile(){
+		return file;
 	}
 
 	public String getGenre(){
@@ -203,6 +212,8 @@ public class Song extends Media {
 
 	@Override
 	public String toString(){
+		if(title==null || title.isBlank())
+			return file.getName();
 		return title;
 	}
 }
