@@ -3,13 +3,16 @@ package com.verban.media.ui;
 import com.verban.media.*;
 
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.*;
 import javafx.stage.*;
+import javafx.collections.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import java.net.*;
 import java.io.*;
+import java.util.*;
 
 /**
 * Main class for initiating and controlling the UI of the application.
@@ -24,19 +27,19 @@ public class UIController{
 	private Stage mainStage;
 
 	@FXML
-	private ListView songList;
+	private TableView<Song> songList;
 	@FXML
-	private ListView albumList;
+	private ListView<Album> albumList;
 	@FXML
-	private ListView albumSongList;
+	private ListView<Song> albumSongList;
 	@FXML
-	private ListView artistList;
+	private ListView<Artist> artistList;
 	@FXML
-	private ListView artistSongList;
+	private ListView<Song> artistSongList;
 	@FXML
-	private ListView playlistList;
+	private ListView<Playlist> playlistList;
 	@FXML
-	private ListView playlistSongList;
+	private ListView<Song> playlistSongList;
 
 	private FileChooser libraryChooser;
 	private FileChooser mediaChooser;
@@ -79,12 +82,40 @@ public class UIController{
 	}
 
 	/**
-	* Sets each of the main list views to be backed by the propper list in the Library.
+	* Sets each of the main list/table views to be backed by the propper list in the Library.
 	* This should only need to be called once at the creation of the UI, but subsequent calls should not break anything.
 	*/
 	private void linkLists(){
 		songList.setItems(library.getSongs());
+
+		TableColumn<Song, String> titleColumn = new TableColumn<>("Title");
+		titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
+
+		TableColumn<Song, String> artistColumn = new TableColumn<>("Artist");
+		artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artist"));
+
+		TableColumn<Song, String> runTimeColumn = new TableColumn<>("Run Time");
+		runTimeColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("runtime"));
+
+		TableColumn<Song, String> albumColumn = new TableColumn<>("Album");
+		albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("originalAlbum"));
+
+		songList.getColumns().addAll(titleColumn, artistColumn, albumColumn, runTimeColumn);
+
+
+
 		albumList.setItems(library.getAlbums());
+		albumList.setOnMouseClicked(e -> {
+			ObservableList<Album> selected = albumList.getSelectionModel().getSelectedItems();
+			if(selected.size() > 0){
+				Album selAlbum = selected.get(0);
+				albumSongList.getItems().clear();
+				albumSongList.getItems().addAll(selAlbum.getAllTracks());
+				System.out.println(Arrays.toString(selAlbum.getAllTracks()));
+			}else{
+				albumSongList.getItems().clear();
+			}
+		});
 		artistList.setItems(library.getArtists());
 		playlistList.setItems(library.getPlaylists());
 	}
@@ -143,7 +174,6 @@ public class UIController{
 				Song s = new Song(mediaFile);
 				System.out.println("Loaded file");
 				library.addSong(s);
-				System.out.println(library.getSongs());
 			}catch(FileFormatException e){
 				Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
 				alert.showAndWait();
@@ -155,5 +185,33 @@ public class UIController{
 	}
 
 	@FXML
-	public void importFolder(){}
+	public void importFolder(){
+		File mediaFolder = folderChooser.showDialog(mainStage);
+		if(mediaFolder != null){
+			int read = importFolderHelper(mediaFolder);
+			Alert alert = new Alert(Alert.AlertType.INFORMATION, "Sucessfully imported " + read + " files.");
+			alert.showAndWait();
+		}
+	}
+
+	/**
+	* Helper method for reading directories recursively. Returns the number of files successfully read.
+	*/
+	private int importFolderHelper(File folder){
+		int read = 0;
+		if(folder != null){
+			for(File f : folder.listFiles()){
+				if(f.isFile()){
+					try{
+						Song s = new Song(f);
+						library.addSong(s);
+						read++;
+					}catch(Exception e){}
+				}else if(f.isDirectory()){
+					read += importFolderHelper(f);
+				}
+			}
+		}
+		return read;
+	}
 }

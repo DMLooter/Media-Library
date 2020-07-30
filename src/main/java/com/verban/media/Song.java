@@ -13,10 +13,21 @@ import org.jaudiotagger.tag.*;
 */
 public class Song extends Media {
 
+	/**
+	* Placeholder song to use in albums where some songs are missing.
+	*/
+	public static final Song PLACEHOLDER;
+
+	static{
+		PLACEHOLDER = new Song();
+		PLACEHOLDER.title = "";
+		PLACEHOLDER.file = new File("");
+	}
+
 	private static final long serialVersionUID=234768901L;
 
 	// Runtime in seconds
-	private int length;
+	private int runtime;
 	// File where this song is
 	private File file;
 	// Genre of the song
@@ -25,6 +36,8 @@ public class Song extends Media {
 	private String originalAlbum;
 	//The track number, and number of tracks on the album this song comes from
 	private int albumTrackNumber, albumTracks;
+
+	private Song(){}
 
 	/**
 	* Attempts to read in information from a file and populate this object.
@@ -67,7 +80,7 @@ public class Song extends Media {
 			AudioHeader head = f.getAudioHeader();
 					System.out.println("tag read");
 
-			this.length = head.getTrackLength();
+			this.runtime = head.getTrackLength();
 
 			this.title = tag.getFirst(FieldKey.TITLE);
 
@@ -127,8 +140,8 @@ public class Song extends Media {
 		return true;
 	}
 
-	public int getTrackLength(){
-		return length;
+	public int getRuntime(){
+		return runtime;
 	}
 
 	public String getGenre(){

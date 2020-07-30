@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -36,31 +37,19 @@
         </Menu>
       </menus>
     </MenuBar>
-      <TabPane prefHeight="467.0" prefWidth="640.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane prefWidth="640.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="Songs">
 			  <content>
-                  <ScrollPane>
-					  <content>
-						  <ListView fx:id="songList" style="-fx-pref-width:100%"/>
-					  </content>
-                  </ScrollPane>
-               </content>
+				<TableView fx:id="songList" style="-fx-pref-width:100%"/>
+			</content>
           </Tab>
           <Tab text="Albums">
                <content>
                   <SplitPane prefWidth="200.0">
                      <items>
-                        <ScrollPane>
-                           <content>
-                              <ListView fx:id="albumList" style="-fx-pref-width:100%"/>
-                           </content>
-                        </ScrollPane>
-                        <ScrollPane>
-                           <content>
-                              <ListView fx:id="albumSongList" style="-fx-pref-width:100%"/>
-                           </content>
-                        </ScrollPane>
+	                      <ListView fx:id="albumList" style="-fx-pref-width:100%"/>
+	                      <ListView fx:id="albumSongList" style="-fx-pref-width:100%"/>
 					</items>
 				 </SplitPane>
                </content>
@@ -69,16 +58,8 @@
 				<content>
                    <SplitPane prefWidth="200.0">
                       <items>
-                         <ScrollPane>
-                            <content>
-                               <ListView fx:id="artistList" style="-fx-pref-width:100%"/>
-                            </content>
-                         </ScrollPane>
-                         <ScrollPane>
-                            <content>
-                               <ListView fx:id="artistSongList" style="-fx-pref-width:100%"/>
-                            </content>
-                         </ScrollPane>
+                           <ListView fx:id="artistList" style="-fx-pref-width:100%"/>
+                           <ListView fx:id="artistSongList" style="-fx-pref-width:100%"/>
 					 </items>
 				  </SplitPane>
                 </content>
@@ -87,16 +68,8 @@
 				<content>
                    <SplitPane prefWidth="200.0">
                       <items>
-                         <ScrollPane>
-                            <content>
-                               <ListView fx:id="playlistList" style="-fx-pref-width:100%"/>
-                            </content>
-                         </ScrollPane>
-                         <ScrollPane>
-                            <content>
-                               <ListView fx:id="playlistSongList" style="-fx-pref-width:100%"/>
-                            </content>
-                         </ScrollPane>
+                           <ListView fx:id="playlistList" style="-fx-pref-width:100%"/>
+                           <ListView fx:id="playlistSongList" style="-fx-pref-width:100%"/>
 					 </items>
 				  </SplitPane>
                 </content>

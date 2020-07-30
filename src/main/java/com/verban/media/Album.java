@@ -14,6 +14,7 @@ public class Album extends Media {
 
 	/**
 	* Creates a new empty album with the specified title, year, and artists, and room for the specified number of songs.
+	* Fils the tracks list with the PLACEHOLDER song.
 	* @param title the name of this Album
 	* @param tracks the number of songs on this Album
 	* @param year the year this Album was published
@@ -21,6 +22,7 @@ public class Album extends Media {
 	*/
 	public Album(String title, int tracks, int year, String artist){
 		this(title, new Song[tracks], year, artist);
+		Arrays.fill(this. tracks, Song.PLACEHOLDER);
 	}
 
 	/**
