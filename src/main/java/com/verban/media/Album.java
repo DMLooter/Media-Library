@@ -7,6 +7,9 @@ import java.util.*;
 * @author Michael Verban (2020)
 */
 public class Album extends Media {
+
+	private static final long serialVersionUID=19834754;
+
 	private Song[] tracks;
 
 	/**

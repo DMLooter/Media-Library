@@ -1,12 +1,16 @@
 package com.verban.media;
 
 import java.util.*;
+import java.io.Serializable;
 
 /**
 * This class represents an Artist or Creator of media with a name.
 * @author Michael Verban (2020)
 */
-public class Artist{
+public class Artist implements Serializable{
+
+	private static final long serialVersionUID=3986175294L;
+
 	private String name;
 	// For any album this artist was a part of
 	private List<Album> albums;

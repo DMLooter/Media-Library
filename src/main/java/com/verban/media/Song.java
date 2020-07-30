@@ -12,6 +12,9 @@ import org.jaudiotagger.tag.*;
 * @author Michael Verban (2020)
 */
 public class Song extends Media {
+
+	private static final long serialVersionUID=234768901L;
+
 	// Runtime in seconds
 	private int length;
 	// File where this song is

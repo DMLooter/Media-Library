@@ -1,6 +1,7 @@
 package com.verban.media;
 
 import java.util.*;
+import java.io.Serializable;
 
 /**
 * This class represents any single peice of media, Album, Song, Video, etc.
@@ -8,7 +9,11 @@ import java.util.*;
 *
 * @author Michael Verban (2020)
 */
-public abstract class Media{
+public abstract class Media implements Serializable{
+
+	private static final long serialVersionUID=42412398L;
+
+
 	// Title of the piece of media
 	protected String title;
 	// List of Artists who contributed to this piece of media
