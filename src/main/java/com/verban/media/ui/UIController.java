@@ -101,7 +101,7 @@ public class UIController{
 		titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
 
 		TableColumn<Song, String> artistColumn = new TableColumn<>("Artist");
-		artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artist"));
+		artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artistName"));
 
 		TableColumn<Song, String> runTimeColumn = new TableColumn<>("Run Time");
 		runTimeColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("runtime"));
@@ -215,7 +215,7 @@ public class UIController{
 		HBox artistBox = new HBox();
 		Label artistLabel = new Label("Artist: ");
 		TextField artistInput = new TextField();
-		artistInput.setText(song.getArtist());
+		artistInput.setText(song.getArtistName());
 		artistBox.getChildren().add(artistLabel);
 		artistBox.getChildren().add(artistInput);
 		artistBox.setAlignment(Pos.CENTER);
@@ -239,7 +239,7 @@ public class UIController{
 		genreBox.setAlignment(Pos.CENTER);
 		all.getChildren().add(genreBox);
 
-		/*HBox trackNumBox = new HBox();
+		HBox trackNumBox = new HBox();
 		Label trackLabel = new Label("Track number ");
 		Spinner trackInput = new Spinner(1,100, song.getAlbumTrackNumber());
 		trackInput.setPrefWidth(70);
@@ -248,7 +248,7 @@ public class UIController{
 		numTracksInput.setPrefWidth(70);
 		trackNumBox.getChildren().addAll(trackLabel, trackInput, outOfLabel, numTracksInput);
 		trackNumBox.setAlignment(Pos.CENTER);
-		all.getChildren().add(trackNumBox);*/
+		all.getChildren().add(trackNumBox);
 
 
 		HBox buttons = new HBox();
@@ -256,29 +256,12 @@ public class UIController{
 		Button save = new Button("Save");
 		// Make the button indicate what is missing or invalid before adding anything
 		save.setOnAction(e -> {
-			/* The steps to go through are:
-			* attempt to write the tags to the file by maing a new temp song object,
-			* 	editing the fields, and then saving the tags
-			* If that succedes,	tell the library to go through and update references, using the temp song
-			*/
-			try{
-				Song temp = new Song(song.getFile());
-				temp.setTitle(titleInput.getText());
-				temp.setOriginalAlbum(albumInput.getText());
-				temp.setArtist(artistInput.getText());
-				temp.setYear((Integer)yearInput.getValue());
-				temp.setGenre(genreInput.getText());
-				temp.setAlbumTrackNumber(song.getAlbumTrackNumber());
-				temp.setAlbumTracks(song.getAlbumTracks());
-
-				if(temp.writeTags()){
-					//Write succeded, commit to library
-					library.updateSong(song, temp);
-				}
-			}catch(IOException ex){
-				// Shouldnt happen, unless a file has moved in the file system.
-				// TODO make this more clear to end user when failed.
-				ex.printStackTrace();
+			boolean success = library.updateSong(song, titleInput.getText(), albumInput.getText(),
+				artistInput.getText(), (Integer)yearInput.getValue(), genreInput.getText(),
+				(Integer)trackInput.getValue(), (Integer)numTracksInput.getValue());
+			if(!success){
+				Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to write tags to file");
+				alert.showAndWait();
 			}
 			popup.close();
 		});

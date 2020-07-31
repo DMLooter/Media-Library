@@ -14,13 +14,10 @@ public class Artist implements Serializable{
 	private String name;
 	// For any album this artist was a part of
 	private List<Album> albums;
-	// This array is only for songs not on a particular album
-	private List<Song> songs;
 
 	public Artist(String name){
 		this.name = name;
 		albums = new ArrayList<Album>();
-		songs = new ArrayList<Song>();
 	}
 
 	public String getName(){
@@ -61,12 +58,16 @@ public class Artist implements Serializable{
 	}
 
 	public Song[] getAllSongs(){
+		List<Song> songs = new ArrayList<Song>();
+		for(Album a : albums){
+			songs.addAll(Arrays.asList(a.getAllTracks()));
+		}
 		return songs.toArray(new Song[0]);
 	}
 
-	/**
+	/*
 	* Returns true if a song with the same filename exists in this Artists' list
-	*/
+	*
 	public boolean hasSong(Song s){
 		return songs.contains(s);
 	}
@@ -83,7 +84,7 @@ public class Artist implements Serializable{
 	* Attempts to retrieve the song with the specified name if it exists in this artists list
 	* @param name the name of the song to attempt to retrieve
 	* @return the song object with the given name, if it exits, otherwise null
-	*/
+	*
 	public Song getSong(String name){
 		for(Song s : songs){
 			if(s.getTitle().equals(name)){
@@ -91,7 +92,7 @@ public class Artist implements Serializable{
 			}
 		}
 		return null;
-	}
+	}*/
 
 	@Override
 	public boolean equals(Object o){
