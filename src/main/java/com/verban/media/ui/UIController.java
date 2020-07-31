@@ -79,6 +79,8 @@ public class UIController{
 		loader.setLocation(getClass().getResource("/com/verban/media/ui/UI.fxml"));
 		VBox vbox = loader.<VBox>load();
 
+		tabs.maxHeightProperty().bind(primaryStage.heightProperty());
+
 		linkLists();
 
 		mainScene = new Scene(vbox);

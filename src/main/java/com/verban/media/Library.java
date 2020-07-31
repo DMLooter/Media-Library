@@ -6,8 +6,6 @@ import javafx.collections.*;
 /**
 * Represents a collection of media (artists, albums, playlists, songs, videos, etc.)
 *
-* TODO: add a way of getting Song/Album/Artist/Playlist by just defining features, allowing the method to create them as needed.
-* TODO: add a validate/link method so that when the Library is deserialized, we can ensure that there is one instance of each song/album/artist/playlist that is coppied to all locations.
 *
 * @author Michael Verban (2020)
 */

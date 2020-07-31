@@ -65,35 +65,6 @@ public class Artist implements Serializable{
 		return songs.toArray(new Song[0]);
 	}
 
-	/*
-	* Returns true if a song with the same filename exists in this Artists' list
-	*
-	public boolean hasSong(Song s){
-		return songs.contains(s);
-	}
-
-	public void addSong(Song s){
-		songs.add(s);
-	}
-
-	public boolean removeSong(Song s){
-		return songs.remove(s);
-	}
-
-	/**
-	* Attempts to retrieve the song with the specified name if it exists in this artists list
-	* @param name the name of the song to attempt to retrieve
-	* @return the song object with the given name, if it exits, otherwise null
-	*
-	public Song getSong(String name){
-		for(Song s : songs){
-			if(s.getTitle().equals(name)){
-				return s;
-			}
-		}
-		return null;
-	}*/
-
 	@Override
 	public boolean equals(Object o){
 		if(o instanceof Artist){

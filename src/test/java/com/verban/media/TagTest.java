@@ -42,7 +42,7 @@ public class TagTest {
 
 			assertEquals("Test MP3", s.getTitle());
 			assertEquals(30, s.getRuntime());
-			assertEquals("Michael", s.getArtist());
+			assertEquals("Michael", s.getArtistName());
 			assertEquals("Test Files", s.getOriginalAlbum());
 			assertEquals(2020, s.getYear());
 			assertEquals("Silence", s.getGenre());

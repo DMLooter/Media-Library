@@ -42,19 +42,9 @@ public class Playlist implements Serializable{
 		return tracks.get(n-1);
 	}
 
-	/**
-	* Sets the nth track on this Playlist to the specified song.
-	* Fails if n is outside the range of tracks on this album.
-	* @param s the song to put into this Playlist
-	* @param n the track number to set to s, 1-INDEXED!
-	* @return true if n is a valid track number and the set succeded, false otherwise.
-	*/
-	public boolean setTrack(Song s, int n){
-		if(n < 1 || n > tracks.size())
-			return false;
-
-		tracks.set(n-1,s);
-		return true;
+	// TODO disalow duplicates
+	public void addTrack(Song s){
+		tracks.add(s);
 	}
 
 	/**
@@ -71,8 +61,8 @@ public class Playlist implements Serializable{
 	public boolean equals(Object o){
 		if(o instanceof Playlist){
 			Playlist p = (Playlist)o;
-			// Two equal playlists will have the same name and tracks.
-			return p.title.equals(this.title) && p.tracks.equals(this.tracks);
+			// Two equal playlists will have the same name
+			return p.title.equals(this.title);
 		}
 		return false;
 	}
