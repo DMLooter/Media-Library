@@ -91,7 +91,7 @@ public class Song extends Media {
 
 			this.title = tag.getFirst(FieldKey.TITLE);
 
-			this.artist = tag.getFirst(FieldKey.ARTIST);
+			this.artistName = tag.getFirst(FieldKey.ARTIST);
 			try{
 				this.year = Integer.parseInt(tag.getFirst(FieldKey.YEAR));
 			}catch(NumberFormatException e){
@@ -131,7 +131,7 @@ public class Song extends Media {
 			AudioFile f = AudioFileIO.read(file);
 			Tag tag = f.getTag();
 			tag.setField(FieldKey.TITLE, this.title);
-			tag.setField(FieldKey.ARTIST, artist);
+			tag.setField(FieldKey.ARTIST, artistName);
 
 			tag.setField(FieldKey.YEAR, ""+this.year);
 

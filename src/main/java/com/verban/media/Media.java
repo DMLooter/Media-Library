@@ -17,7 +17,7 @@ public abstract class Media implements Serializable{
 	// Title of the piece of media
 	protected String title = "";
 	// Name of Artist who created to this piece of media
-	protected String artist = "";
+	protected String artistName = "";
 	// Year this media was created
 	protected int year = 0;
 	// Five star rating of this piece of media
@@ -34,15 +34,15 @@ public abstract class Media implements Serializable{
 	/**
 	* Sets the name of the artist of this media.
 	*/
-	public void setArtist(String artist){
-		this.artist = artist;
+	public void setArtistName(String artistName){
+		this.artistName = artistName;
 	}
 
 	/**
 	* Returns the name of the artist for this media.
 	*/
-	public String getArtist(){
-		return artist;
+	public String getArtistName(){
+		return artistName;
 	}
 
 	public void setYear(int year){

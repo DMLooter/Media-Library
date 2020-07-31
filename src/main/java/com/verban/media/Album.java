@@ -31,17 +31,18 @@ public class Album extends Media {
 
 	/**
 	* Creates a new album with the specified title, year, and artists, who's Songs are contained in tracks.
+	* Creates a new album with the specified title, year, and artist, who's Songs are contained in tracks.
 	* @param title the name of this Album
 	* @param tracks the in-order list of songs on this Album
 	* @param year the year this Album was published
 	* @param artists the artists that contributed to this Album
 	*/
-	public Album(String title, Song[] tracks, int year, String artist){
+	public Album(String title, Song[] tracks, int year, String artistName){
 		this.title = title;
 		this.tracks = new ArrayList<Song>();
 		this.tracks.addAll(Arrays.asList(tracks));
 		this.year = year;
-		this.artist = artist;
+		this.artistName = artistName;
 	}
 
 	/**
@@ -92,7 +93,7 @@ public class Album extends Media {
 		if(o instanceof Album){
 			Album a = (Album)o;
 			// Two equal albums will have the same title, year, and artist.
-			return a.title.equals(this.title) && a.year == this.year && a.artist.equals(this.artist);
+			return a.title.equals(this.title) && a.year == this.year && a.artistName.equals(this.artistName);
 		}
 		return false;
 	}
