@@ -32,7 +32,7 @@ public class Artist implements Serializable{
 	}
 
 	/**
-	* Returns true if an album with the same name, year, and number of tracks exists in this Artists' list
+	* Returns true if an album with the same name, year, and artist exists in this Artists' list
 	*/
 	public boolean hasAlbum(Album a){
 		return albums.contains(a);
@@ -62,6 +62,13 @@ public class Artist implements Serializable{
 
 	public Song[] getAllSongs(){
 		return songs.toArray(new Song[0]);
+	}
+
+	/**
+	* Returns true if a song with the same filename exists in this Artists' list
+	*/
+	public boolean hasSong(Song s){
+		return songs.contains(s);
 	}
 
 	public void addSong(Song s){
