@@ -43,8 +43,8 @@
                <content>
                   <SplitPane prefWidth="200.0">
                      <items>
-	                      <ListView fx:id="albumList" style="-fx-pref-width:100%"/>
-	                      <ListView fx:id="albumSongList" style="-fx-pref-width:100%"/>
+	                      <TableView fx:id="albumList" style="-fx-pref-width:100%"/>
+	                      <TableView fx:id="albumSongList" style="-fx-pref-width:100%"/>
 					</items>
 				 </SplitPane>
                </content>
@@ -54,7 +54,7 @@
                    <SplitPane prefWidth="200.0">
                       <items>
                            <ListView fx:id="artistList" style="-fx-pref-width:100%"/>
-                           <ListView fx:id="artistSongList" style="-fx-pref-width:100%"/>
+                           <TableView fx:id="artistSongList" style="-fx-pref-width:100%"/>
 					 </items>
 				  </SplitPane>
                 </content>
@@ -64,7 +64,7 @@
                    <SplitPane prefWidth="200.0">
                       <items>
                            <ListView fx:id="playlistList" style="-fx-pref-width:100%"/>
-                           <ListView fx:id="playlistSongList" style="-fx-pref-width:100%"/>
+                           <TableView fx:id="playlistSongList" style="-fx-pref-width:100%"/>
 					 </items>
 				  </SplitPane>
                 </content>

@@ -37,17 +37,17 @@ public class UIController{
 	@FXML
 	private TableView<Song> songList;
 	@FXML
-	private ListView<Album> albumList;
+	private TableView<Album> albumList;
 	@FXML
-	private ListView<Song> albumSongList;
+	private TableView<Song> albumSongList;
 	@FXML
 	private ListView<Artist> artistList;
 	@FXML
-	private ListView<Song> artistSongList;
+	private TableView<Song> artistSongList;
 	@FXML
 	private ListView<Playlist> playlistList;
 	@FXML
-	private ListView<Song> playlistSongList;
+	private TableView<Song> playlistSongList;
 
 	private FileChooser libraryChooser;
 	private FileChooser mediaChooser;
@@ -117,7 +117,7 @@ public class UIController{
 		Taken and edited from
 		https://web.archive.org/web/20140406113922/https://www.marshall.edu/genomicjava/2013/12/30/javafx-tableviews-with-contextmenus/
 		*/
-		songList.setRowFactory(
+		Callback<TableView<Song>, TableRow<Song>> songListRowFactory =
 		    new Callback<TableView<Song>, TableRow<Song>>() {
 		        @Override
 		        public TableRow<Song> call(TableView<Song> tableView) {
@@ -126,7 +126,16 @@ public class UIController{
 		            MenuItem editItem = new MenuItem("Edit");
 		            editItem.setOnAction(e->showSongEditDialog(row.getItem()));
 
-		            rowMenu.getItems().addAll(editItem);
+					Menu addToPlaylist = new Menu("Add song to playlist...");
+
+					for(Playlist playlist : library.getPlaylists()){
+						MenuItem pMenu = new MenuItem(playlist.getTitle());
+						pMenu.setOnAction(e -> library.addSongToPlaylist(row.getItem(), playlist.getTitle()));
+						addToPlaylist.getItems().add(pMenu);
+					}
+
+
+		            rowMenu.getItems().addAll(editItem, addToPlaylist);
 
 		            // only display context menu for non-empty rows:
 		            row.contextMenuProperty().bind(
@@ -135,11 +144,21 @@ public class UIController{
 		              .otherwise(rowMenu));
 		            return row;
 		    	}
-			});
+			};
+		songList.setRowFactory(songListRowFactory);
 
 
 		albumList.setItems(library.getAlbums());
-		albumList.setOnMouseClicked(e -> {
+		//Set up columns for the table.
+		TableColumn<Album, String> albumTitleColumn = new TableColumn<>("Title");
+		albumTitleColumn.setCellValueFactory(new PropertyValueFactory<Album, String>("title"));
+
+		TableColumn<Album, String> albumArtistColumn = new TableColumn<>("Artist");
+		albumArtistColumn.setCellValueFactory(new PropertyValueFactory<Album, String>("artistName"));
+
+		albumList.getColumns().addAll(albumTitleColumn, albumArtistColumn);
+
+		albumList.setOnMouseClicked(e -> { // TODO change these to on selecyion model change
 			ObservableList<Album> selected = albumList.getSelectionModel().getSelectedItems();
 			if(selected.size() > 0){
 				Album selAlbum = selected.get(0);
@@ -150,6 +169,12 @@ public class UIController{
 				albumSongList.getItems().clear();
 			}
 		});
+		//TODO, figure out why i cant just re-use the same columns on all four table views, the songs only show up on the last one added to.
+		albumSongList.getColumns().addAll(titleColumn, artistColumn, albumColumn, runTimeColumn);
+		albumSongList.setRowFactory(songListRowFactory);
+
+
+
 		artistList.setItems(library.getArtists());
 		artistList.setOnMouseClicked(e -> {
 			ObservableList<Artist> selected = artistList.getSelectionModel().getSelectedItems();
@@ -165,6 +190,9 @@ public class UIController{
 				albumSongList.getItems().clear();
 			}
 		});
+		//artistSongList.getColumns().addAll(titleColumn, artistColumn, albumColumn, runTimeColumn);
+		artistSongList.setRowFactory(songListRowFactory);
+
 
 		playlistList.setItems(library.getPlaylists());
 		playlistList.setOnMouseClicked(e -> {
@@ -177,6 +205,9 @@ public class UIController{
 				playlistSongList.getItems().clear();
 			}
 		});
+		//playlistSongList.getColumns().addAll(titleColumn, artistColumn, albumColumn, runTimeColumn);
+		playlistSongList.setRowFactory(songListRowFactory);
+
 	}
 
 	/**

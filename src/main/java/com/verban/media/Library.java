@@ -196,6 +196,21 @@ public class Library {
 	}
 
 	/**
+	* Returns the playlist instance with the specified title, if it exists.
+	* If it does not, a new one is created and added to the playlist list, then returned.
+	*/
+	public Playlist getPlaylist(String title){
+		Playlist test = new Playlist(title);
+		int i = -1;
+		if((i = playlists.indexOf(test)) > -1){
+			return playlists.get(i);
+		}else{
+			playlists.add(test);
+			return test;
+		}
+	}
+
+	/** TODO is this needed?
 	* Tests whether a playlist with the given name exists already in this library.
 	* @return true if there is a playlist with the given name, false otherwise
 	*/
@@ -263,5 +278,10 @@ public class Library {
 	public void createPlaylist(String name){
 		Playlist p = new Playlist(name);
 		playlists.add(p);
+	}
+
+	public void addSongToPlaylist(Song song, String playlistTitle){
+		Playlist playlist = getPlaylist(playlistTitle);
+		playlist.addTrack(song);
 	}
 }
