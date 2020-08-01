@@ -13,23 +13,21 @@ public class Album extends Media {
 	private List<Song> tracks;
 
 	/**
-	* Creates a new empty album with the specified title, year, and artist.
+	* Creates a new empty album with the specified title and artist.
 	* @param title the name of this Album
-	* @param year the year this Album was published
 	* @param artists the artists that contributed to this Album
 	*/
-	public Album(String title, int year, String artistName){
-		this(title, new Song[0], year, artistName);
+	public Album(String title, String artistName){
+		this(title, artistName, new Song[0]);
 	}
 
 	/**
-	* Creates a new album with the specified title, year, and artist, who's Songs are contained in tracks.
+	* Creates a new album with the specified title and artist, who's Songs are contained in tracks.
 	* @param title the name of this Album
-	* @param tracks the in-order list of songs on this Album
-	* @param year the year this Album was published
 	* @param artists the artists that contributed to this Album
+	* @param tracks the in-order list of songs on this Album
 	*/
-	public Album(String title, Song[] tracks, int year, String artistName){
+	public Album(String title, String artistName, Song... tracks){
 		this.title = title;
 		this.tracks = new ArrayList<Song>();
 		this.tracks.addAll(Arrays.asList(tracks));
@@ -79,15 +77,15 @@ public class Album extends Media {
 	public boolean equals(Object o){
 		if(o instanceof Album){
 			Album a = (Album)o; //TODO remove reliance on year equality.
-			// Two equal albums will have the same title, year, and artist.
-			return a.title.equals(this.title) && a.year == this.year && a.artistName.equals(this.artistName);
+			// Two equal albums will have the same title and artist.
+			return a.title.equals(this.title) && a.artistName.equals(this.artistName);
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode(){
-		return this.title.hashCode() ^ this.year;
+		return this.title.hashCode() ^ this.artistName.hashCode();
 	}
 
 	@Override

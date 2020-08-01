@@ -127,7 +127,7 @@ public class Library {
 
 		for(Song song : songs){
 			// We are always part of an album, regardless of how much info we have on it
-			Album album = getAlbum(song.getOriginalAlbum(), song.getYear(), song.getArtistName());
+			Album album = getAlbum(song.getOriginalAlbum(), song.getArtistName());
 			album.addTrack(song);
 		}
 		// We dont need to do anything more, becuase in the creation of the needed albums, they were automatically added to the artists.
@@ -159,8 +159,8 @@ public class Library {
 	* If it does not, a new one is created and added to the album list, then returned.
 	* A newly created album is also automatically added to the album list of its artist.
 	*/
-	public Album getAlbum(String title, int year, String artistName){
-		Album test = new Album(title, year, artistName);
+	public Album getAlbum(String title, String artistName){
+		Album test = new Album(title, artistName);
 		int i = -1;
 		if((i = albums.indexOf(test)) > -1){
 			return albums.get(i);
@@ -233,7 +233,7 @@ public class Library {
 			songs.add(song);
 
 			//Always add to the album, regardless of how blank it is
-			Album album = getAlbum(song.getOriginalAlbum(), song.getYear(), song.getArtistName());
+			Album album = getAlbum(song.getOriginalAlbum(), song.getArtistName());
 			album.addTrack(song);
 		}
 	}
@@ -262,11 +262,11 @@ public class Library {
 		//If album changed in any way, remove it from the old one and add it to the new one
 		if(!song.getOriginalAlbum().equals(originalAlbum) || song.getYear() != year || !song.getArtistName().equals(artistName)) {
 			//TODO deal with empty albums/artists, though a save and reload of the library will remove them
-			getAlbum(song.getOriginalAlbum(), song.getYear(), song.getArtistName()).removeTrack(song);
+			getAlbum(song.getOriginalAlbum(), song.getArtistName()).removeTrack(song);
 			song.setOriginalAlbum(originalAlbum);
 			song.setYear(year);
 			song.setArtistName(artistName);
-			getAlbum(originalAlbum, year, artistName).addTrack(song);
+			getAlbum(originalAlbum, artistName).addTrack(song);
 		}
 
 		return song.writeTags();
