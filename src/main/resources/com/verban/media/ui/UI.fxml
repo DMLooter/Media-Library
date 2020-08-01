@@ -32,11 +32,11 @@
         </Menu>
       </menus>
     </MenuBar>
-      <TabPane fx:id="tabs" prefWidth="640.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane fx:id="tabs" VBox.vgrow="ALWAYS" prefWidth="640.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
-          <Tab text="Songs">
+          <Tab text="Songs" >
 			  <content>
-				<TableView fx:id="songList" style="-fx-pref-width:100%"/>
+				<TableView fx:id="songList"  style="-fx-pref-width:100%"/>
 			</content>
           </Tab>
           <Tab text="Albums">

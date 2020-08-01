@@ -157,55 +157,87 @@ public class UIController{
 		albumArtistColumn.setCellValueFactory(new PropertyValueFactory<Album, String>("artistName"));
 
 		albumList.getColumns().addAll(albumTitleColumn, albumArtistColumn);
-
-		albumList.setOnMouseClicked(e -> { // TODO change these to on selecyion model change
-			ObservableList<Album> selected = albumList.getSelectionModel().getSelectedItems();
-			if(selected.size() > 0){
-				Album selAlbum = selected.get(0);
-				albumSongList.getItems().clear();
-				albumSongList.getItems().addAll(selAlbum.getAllTracks());
-				albumSongList.getItems().removeAll(Song.PLACEHOLDER_LIST);
-			}else{
-				albumSongList.getItems().clear();
+		albumList.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Album>() {
+			@Override
+			public void onChanged(Change<? extends Album> change) {
+				ObservableList<Album> selected = albumList.getSelectionModel().getSelectedItems();
+				if(selected.size() > 0){
+					Album selAlbum = selected.get(0);
+					albumSongList.getItems().clear();
+					albumSongList.getItems().addAll(selAlbum.getAllTracks());
+					albumSongList.getItems().removeAll(Song.PLACEHOLDER_LIST);
+				}else{
+					albumSongList.getItems().clear();
+				}
 			}
 		});
-		//TODO, figure out why i cant just re-use the same columns on all four table views, the songs only show up on the last one added to.
+		//Set up columns for the table, not sure why i need to do this again, but smiply reusing the existing ones didnt work.
+		titleColumn = new TableColumn<>("Title");
+		titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
+		artistColumn = new TableColumn<>("Artist");
+		artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artistName"));
+		runTimeColumn = new TableColumn<>("Run Time");
+		runTimeColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("runtime"));
+		albumColumn = new TableColumn<>("Album");
+		albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("originalAlbum"));
 		albumSongList.getColumns().addAll(titleColumn, artistColumn, albumColumn, runTimeColumn);
 		albumSongList.setRowFactory(songListRowFactory);
 
 
 
 		artistList.setItems(library.getArtists());
-		artistList.setOnMouseClicked(e -> {
-			ObservableList<Artist> selected = artistList.getSelectionModel().getSelectedItems();
-			if(selected.size() > 0){
-				Artist selArtist = selected.get(0);
-				artistSongList.getItems().clear();
-				artistSongList.getItems().addAll(selArtist.getAllSongs());
-				for(Album a : selArtist.getAllAlbums()){
-					artistSongList.getItems().addAll(a.getAllTracks());
+		artistList.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Artist>() {
+			@Override
+			public void onChanged(Change<? extends Artist> change) {
+				ObservableList<Artist> selected = artistList.getSelectionModel().getSelectedItems();
+				if(selected.size() > 0){
+					Artist selArtist = selected.get(0);
+					artistSongList.getItems().clear();
+					artistSongList.getItems().addAll(selArtist.getAllSongs());
+					for(Album a : selArtist.getAllAlbums()){
+						artistSongList.getItems().addAll(a.getAllTracks());
+					}
+					albumSongList.getItems().removeAll(Song.PLACEHOLDER_LIST);
+				}else{
+					albumSongList.getItems().clear();
 				}
-				albumSongList.getItems().removeAll(Song.PLACEHOLDER_LIST);
-			}else{
-				albumSongList.getItems().clear();
 			}
 		});
-		//artistSongList.getColumns().addAll(titleColumn, artistColumn, albumColumn, runTimeColumn);
+		titleColumn = new TableColumn<>("Title");
+		titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
+		artistColumn = new TableColumn<>("Artist");
+		artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artistName"));
+		runTimeColumn = new TableColumn<>("Run Time");
+		runTimeColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("runtime"));
+		albumColumn = new TableColumn<>("Album");
+		albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("originalAlbum"));
+		artistSongList.getColumns().addAll(titleColumn, artistColumn, albumColumn, runTimeColumn);
 		artistSongList.setRowFactory(songListRowFactory);
 
 
 		playlistList.setItems(library.getPlaylists());
-		playlistList.setOnMouseClicked(e -> {
-			ObservableList<Playlist> selected = playlistList.getSelectionModel().getSelectedItems();
-			if(selected.size() > 0){
-				Playlist selPlaylist = selected.get(0);
-				playlistSongList.getItems().clear();
-				playlistSongList.getItems().addAll(selPlaylist.getAllTracks());
-			}else{
-				playlistSongList.getItems().clear();
+		playlistList.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Playlist>() {
+			@Override
+			public void onChanged(Change<? extends Playlist> change) {
+				ObservableList<Playlist> selected = playlistList.getSelectionModel().getSelectedItems();
+				if(selected.size() > 0){
+					Playlist selPlaylist = selected.get(0);
+					playlistSongList.getItems().clear();
+					playlistSongList.getItems().addAll(selPlaylist.getAllTracks());
+				}else{
+					playlistSongList.getItems().clear();
+				}
 			}
 		});
-		//playlistSongList.getColumns().addAll(titleColumn, artistColumn, albumColumn, runTimeColumn);
+		titleColumn = new TableColumn<>("Title");
+		titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
+		artistColumn = new TableColumn<>("Artist");
+		artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artistName"));
+		runTimeColumn = new TableColumn<>("Run Time");
+		runTimeColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("runtime"));
+		albumColumn = new TableColumn<>("Album");
+		albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("originalAlbum"));
+		playlistSongList.getColumns().addAll(titleColumn, artistColumn, albumColumn, runTimeColumn);
 		playlistSongList.setRowFactory(songListRowFactory);
 
 	}
