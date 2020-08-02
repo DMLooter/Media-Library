@@ -50,7 +50,7 @@ public class Playlist implements Serializable{
 	/**
 	* Returns a copy of the list of tracks in this Playlist.
 	* @return a copy of the list of tracks in this Playlist
-	*/
+	*///TODO make this observable
 	public Song[] getAllTracks(){
 		return tracks.toArray(new Song[0]);
 	}

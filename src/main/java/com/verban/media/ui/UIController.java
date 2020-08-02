@@ -56,6 +56,9 @@ public class UIController{
 	// The currently loaded library.
 	private Library library;
 
+	// List of menus that can add songs to playlists, shown in *songList context menus
+	ObservableList<MenuItem> playlistMenus;
+
 	public void start(Stage primaryStage) throws Exception {
 
 		// Setup the file pickers with the proper ExtensionFilters
@@ -117,35 +120,21 @@ public class UIController{
 		Taken and edited from
 		https://web.archive.org/web/20140406113922/https://www.marshall.edu/genomicjava/2013/12/30/javafx-tableviews-with-contextmenus/
 		*/
-		Callback<TableView<Song>, TableRow<Song>> songListRowFactory =
-		    new Callback<TableView<Song>, TableRow<Song>>() {
-		        @Override
-		        public TableRow<Song> call(TableView<Song> tableView) {
-		            final TableRow<Song> row = new TableRow<>();
-		            final ContextMenu rowMenu = new ContextMenu();
-		            MenuItem editItem = new MenuItem("Edit");
-		            editItem.setOnAction(e->showSongEditDialog(row.getItem()));
+		ContextMenu contextMenu = new ContextMenu();
+		MenuItem editItem = new MenuItem("Edit");
+		editItem.setOnAction(e->{
+			ObservableList<Song> selected = songList.getSelectionModel().getSelectedItems();
+			if(selected.size() > 0){
+				showSongEditDialog(selected.get(0));
+			}
+		});
 
-					Menu addToPlaylist = new Menu("Add song to playlist...");
+		Menu addToPlaylist = new Menu("Add song to playlist...");
+		playlistMenus = addToPlaylist.getItems();
+		updatePlaylists();
 
-					for(Playlist playlist : library.getPlaylists()){
-						MenuItem pMenu = new MenuItem(playlist.getTitle());
-						pMenu.setOnAction(e -> library.addSongToPlaylist(row.getItem(), playlist.getTitle()));
-						addToPlaylist.getItems().add(pMenu);
-					}
-
-
-		            rowMenu.getItems().addAll(editItem, addToPlaylist);
-
-		            // only display context menu for non-empty rows:
-		            row.contextMenuProperty().bind(
-		              Bindings.when(row.emptyProperty())
-		              .then((ContextMenu)null)
-		              .otherwise(rowMenu));
-		            return row;
-		    	}
-			};
-		songList.setRowFactory(songListRowFactory);
+		contextMenu.getItems().addAll(editItem, addToPlaylist);
+		songList.setContextMenu(contextMenu);
 
 
 		albumList.setItems(library.getAlbums());
@@ -179,7 +168,7 @@ public class UIController{
 		runTimeColumn = new TableColumn<>("Run Time");
 		runTimeColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("formattedRuntime"));
 		albumSongList.getColumns().addAll(titleColumn, artistColumn, runTimeColumn);
-		albumSongList.setRowFactory(songListRowFactory);
+		//albumSongList.setRowFactory(songListRowFactory);
 
 
 
@@ -208,7 +197,7 @@ public class UIController{
 		albumColumn = new TableColumn<>("Album");
 		albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("originalAlbum"));
 		artistSongList.getColumns().addAll(titleColumn, albumColumn, runTimeColumn);
-		artistSongList.setRowFactory(songListRowFactory);
+		//artistSongList.setRowFactory(songListRowFactory);
 
 
 		playlistList.setItems(library.getPlaylists());
@@ -234,7 +223,7 @@ public class UIController{
 		albumColumn = new TableColumn<>("Album");
 		albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("originalAlbum"));
 		playlistSongList.getColumns().addAll(titleColumn, artistColumn, albumColumn, runTimeColumn);
-		playlistSongList.setRowFactory(songListRowFactory);
+		//playlistSongList.setRowFactory(songListRowFactory);
 
 	}
 
@@ -341,6 +330,25 @@ public class UIController{
 		popup.showAndWait();
 	}
 
+	/**
+	* Updates the list of playlists under the "Add to playlist" menu in the songList context menu;
+	*/
+	private void updatePlaylists(){
+		playlistMenus.clear();
+		for(Playlist playlist : library.getPlaylists()){
+			MenuItem pMenu = new MenuItem(playlist.getTitle());
+			pMenu.setOnAction(e -> {
+				ObservableList<Song> selected = songList.getSelectionModel().getSelectedItems();
+				if(selected.size() > 0){
+				library.addSongToPlaylist(selected.get(0), playlist.getTitle());
+				}
+			});
+			playlistMenus.add(pMenu);
+		}
+
+		//TODO do this for all song views
+	}
+
 
 	/** MENU OPTIONS ***************************************************************************/
 
@@ -355,6 +363,7 @@ public class UIController{
 				library.load(libFile);
 				Alert alert = new Alert(Alert.AlertType.INFORMATION, "Sucessfully loaded library");
 				alert.showAndWait();
+				updatePlaylists();
 			}catch(FileFormatException e){
 				Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
 				alert.showAndWait();
@@ -478,6 +487,7 @@ public class UIController{
 				}else{
 					popup.close();
 					library.createPlaylist(name);
+					updatePlaylists();
 				}
 			}
 		});
