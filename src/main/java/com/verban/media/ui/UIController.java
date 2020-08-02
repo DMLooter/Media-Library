@@ -57,7 +57,10 @@ public class UIController{
 	private Library library;
 
 	// List of menus that can add songs to playlists, shown in *songList context menus
-	ObservableList<MenuItem> playlistMenus;
+	ObservableList<MenuItem> playlistMenusSongList;
+	ObservableList<MenuItem> playlistMenusAlbumSongList;
+	ObservableList<MenuItem> playlistMenusArtistSongList;
+	ObservableList<MenuItem> playlistMenusPlaylistSongList;
 
 	public void start(Stage primaryStage) throws Exception {
 
@@ -116,10 +119,6 @@ public class UIController{
 
 		songList.getColumns().addAll(titleColumn, artistColumn, albumColumn, runTimeColumn);
 
-		/*Setup the row factory to allow right clicking on individual rows
-		Taken and edited from
-		https://web.archive.org/web/20140406113922/https://www.marshall.edu/genomicjava/2013/12/30/javafx-tableviews-with-contextmenus/
-		*/
 		ContextMenu contextMenu = new ContextMenu();
 		MenuItem editItem = new MenuItem("Edit");
 		editItem.setOnAction(e->{
@@ -128,14 +127,13 @@ public class UIController{
 				showSongEditDialog(selected.get(0));
 			}
 		});
-
 		Menu addToPlaylist = new Menu("Add song to playlist...");
-		playlistMenus = addToPlaylist.getItems();
-		updatePlaylists();
-
+		playlistMenusSongList = addToPlaylist.getItems();
 		contextMenu.getItems().addAll(editItem, addToPlaylist);
 		songList.setContextMenu(contextMenu);
 
+
+		//Set up the album lists
 
 		albumList.setItems(library.getAlbums());
 		//Set up columns for the table.
@@ -160,7 +158,7 @@ public class UIController{
 				}
 			}
 		});
-		//Set up columns for the table, not sure why i need to do this again, but smiply reusing the existing ones didnt work.
+		//Set up columns for the Song table, not sure why i need to do this again, but smiply reusing the existing ones didnt work.
 		titleColumn = new TableColumn<>("Title");
 		titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
 		artistColumn = new TableColumn<>("Artist");
@@ -168,8 +166,22 @@ public class UIController{
 		runTimeColumn = new TableColumn<>("Run Time");
 		runTimeColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("formattedRuntime"));
 		albumSongList.getColumns().addAll(titleColumn, artistColumn, runTimeColumn);
-		//albumSongList.setRowFactory(songListRowFactory);
 
+		contextMenu = new ContextMenu();
+		editItem = new MenuItem("Edit");
+		editItem.setOnAction(e->{
+			ObservableList<Song> selected = albumSongList.getSelectionModel().getSelectedItems();
+			if(selected.size() > 0){
+				showSongEditDialog(selected.get(0));
+			}
+		});
+		addToPlaylist = new Menu("Add song to playlist...");
+		playlistMenusAlbumSongList = addToPlaylist.getItems();
+		contextMenu.getItems().addAll(editItem, addToPlaylist);
+		albumSongList.setContextMenu(contextMenu);
+
+
+		// Setup Artist List
 
 
 		artistList.setItems(library.getArtists());
@@ -197,8 +209,21 @@ public class UIController{
 		albumColumn = new TableColumn<>("Album");
 		albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("originalAlbum"));
 		artistSongList.getColumns().addAll(titleColumn, albumColumn, runTimeColumn);
-		//artistSongList.setRowFactory(songListRowFactory);
+		contextMenu = new ContextMenu();
+		editItem = new MenuItem("Edit");
+		editItem.setOnAction(e->{
+			ObservableList<Song> selected = artistSongList.getSelectionModel().getSelectedItems();
+			if(selected.size() > 0){
+				showSongEditDialog(selected.get(0));
+			}
+		});
+		addToPlaylist = new Menu("Add song to playlist...");
+		playlistMenusArtistSongList = addToPlaylist.getItems();
+		contextMenu.getItems().addAll(editItem, addToPlaylist);
+		artistSongList.setContextMenu(contextMenu);
 
+
+		// Setup Playlist List
 
 		playlistList.setItems(library.getPlaylists());
 		playlistList.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Playlist>() {
@@ -223,7 +248,18 @@ public class UIController{
 		albumColumn = new TableColumn<>("Album");
 		albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("originalAlbum"));
 		playlistSongList.getColumns().addAll(titleColumn, artistColumn, albumColumn, runTimeColumn);
-		//playlistSongList.setRowFactory(songListRowFactory);
+		contextMenu = new ContextMenu();
+		editItem = new MenuItem("Edit");
+		editItem.setOnAction(e->{
+			ObservableList<Song> selected = playlistSongList.getSelectionModel().getSelectedItems();
+			if(selected.size() > 0){
+				showSongEditDialog(selected.get(0));
+			}
+		});
+		addToPlaylist = new Menu("Add song to playlist...");
+		playlistMenusPlaylistSongList = addToPlaylist.getItems();
+		contextMenu.getItems().addAll(editItem, addToPlaylist);
+		playlistSongList.setContextMenu(contextMenu);
 
 	}
 
@@ -334,16 +370,52 @@ public class UIController{
 	* Updates the list of playlists under the "Add to playlist" menu in the songList context menu;
 	*/
 	private void updatePlaylists(){
-		playlistMenus.clear();
+		playlistMenusSongList.clear();
 		for(Playlist playlist : library.getPlaylists()){
 			MenuItem pMenu = new MenuItem(playlist.getTitle());
 			pMenu.setOnAction(e -> {
 				ObservableList<Song> selected = songList.getSelectionModel().getSelectedItems();
 				if(selected.size() > 0){
-				library.addSongToPlaylist(selected.get(0), playlist.getTitle());
+					library.addSongToPlaylist(selected.get(0), playlist.getTitle());
 				}
 			});
-			playlistMenus.add(pMenu);
+			playlistMenusSongList.add(pMenu);
+		}
+
+		playlistMenusAlbumSongList.clear();
+		for(Playlist playlist : library.getPlaylists()){
+			MenuItem pMenu = new MenuItem(playlist.getTitle());
+			pMenu.setOnAction(e -> {
+				ObservableList<Song> selected = albumSongList.getSelectionModel().getSelectedItems();
+				if(selected.size() > 0){
+					library.addSongToPlaylist(selected.get(0), playlist.getTitle());
+				}
+			});
+			playlistMenusAlbumSongList.add(pMenu);
+		}
+
+		playlistMenusArtistSongList.clear();
+		for(Playlist playlist : library.getPlaylists()){
+			MenuItem pMenu = new MenuItem(playlist.getTitle());
+			pMenu.setOnAction(e -> {
+				ObservableList<Song> selected = artistSongList.getSelectionModel().getSelectedItems();
+				if(selected.size() > 0){
+					library.addSongToPlaylist(selected.get(0), playlist.getTitle());
+				}
+			});
+			playlistMenusArtistSongList.add(pMenu);
+		}
+
+		playlistMenusPlaylistSongList.clear();
+		for(Playlist playlist : library.getPlaylists()){
+			MenuItem pMenu = new MenuItem(playlist.getTitle());
+			pMenu.setOnAction(e -> {
+				ObservableList<Song> selected = playlistSongList.getSelectionModel().getSelectedItems();
+				if(selected.size() > 0){
+					library.addSongToPlaylist(selected.get(0), playlist.getTitle());
+				}
+			});
+			playlistMenusPlaylistSongList.add(pMenu);
 		}
 
 		//TODO do this for all song views
