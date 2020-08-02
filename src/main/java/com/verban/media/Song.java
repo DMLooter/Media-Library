@@ -149,8 +149,31 @@ public class Song extends Media {
 		return true;
 	}
 
+	/**
+	* Returns the runtime of this song in seconds
+	*/
 	public int getRuntime(){
 		return runtime;
+	}
+	/**
+	* Returns a string showing the runtime of this song in hh:mm:ss format
+	*/
+	public String getFormattedRuntime(){
+		int s = runtime;
+		int m = 0;
+		int h = 0;
+
+		h = s / 3600;
+		s = s % 3600;
+
+		m = s / 60;
+		s = s % 60;
+
+		String out = m+":"+String.format("%02d", s);
+		if(h > 0){
+			out = h+":"+out;
+		}
+		return out;
 	}
 
 	public File getFile(){

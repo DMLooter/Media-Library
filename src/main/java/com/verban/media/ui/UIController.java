@@ -106,7 +106,7 @@ public class UIController{
 		artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artistName"));
 
 		TableColumn<Song, String> runTimeColumn = new TableColumn<>("Run Time");
-		runTimeColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("runtime"));
+		runTimeColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("formattedRuntime"));
 
 		TableColumn<Song, String> albumColumn = new TableColumn<>("Album");
 		albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("originalAlbum"));
@@ -177,10 +177,8 @@ public class UIController{
 		artistColumn = new TableColumn<>("Artist");
 		artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artistName"));
 		runTimeColumn = new TableColumn<>("Run Time");
-		runTimeColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("runtime"));
-		albumColumn = new TableColumn<>("Album");
-		albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("originalAlbum"));
-		albumSongList.getColumns().addAll(titleColumn, artistColumn, albumColumn, runTimeColumn);
+		runTimeColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("formattedRuntime"));
+		albumSongList.getColumns().addAll(titleColumn, artistColumn, runTimeColumn);
 		albumSongList.setRowFactory(songListRowFactory);
 
 
@@ -205,13 +203,11 @@ public class UIController{
 		});
 		titleColumn = new TableColumn<>("Title");
 		titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
-		artistColumn = new TableColumn<>("Artist");
-		artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artistName"));
 		runTimeColumn = new TableColumn<>("Run Time");
-		runTimeColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("runtime"));
+		runTimeColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("formattedRuntime"));
 		albumColumn = new TableColumn<>("Album");
 		albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("originalAlbum"));
-		artistSongList.getColumns().addAll(titleColumn, artistColumn, albumColumn, runTimeColumn);
+		artistSongList.getColumns().addAll(titleColumn, albumColumn, runTimeColumn);
 		artistSongList.setRowFactory(songListRowFactory);
 
 
@@ -234,7 +230,7 @@ public class UIController{
 		artistColumn = new TableColumn<>("Artist");
 		artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artistName"));
 		runTimeColumn = new TableColumn<>("Run Time");
-		runTimeColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("runtime"));
+		runTimeColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("formattedRuntime"));
 		albumColumn = new TableColumn<>("Album");
 		albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("originalAlbum"));
 		playlistSongList.getColumns().addAll(titleColumn, artistColumn, albumColumn, runTimeColumn);
