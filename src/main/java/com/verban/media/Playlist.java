@@ -51,10 +51,8 @@ public class Playlist implements Serializable{
 	* Returns a copy of the list of tracks in this Playlist.
 	* @return a copy of the list of tracks in this Playlist
 	*/
-	public List<Song> getAllTracks(){
-		List<Song> copy = new ArrayList<Song>();
-		Collections.copy(copy, tracks);
-		return copy;
+	public Song[] getAllTracks(){
+		return tracks.toArray(new Song[0]);
 	}
 
 	@Override
