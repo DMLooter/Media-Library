@@ -268,6 +268,9 @@ public class Library {
 			song.setArtistName(artistName);
 			getAlbum(originalAlbum, artistName).addTrack(song);
 		}
+		// Ensure that the list updates
+		songs.remove(song);
+		songs.add(song);
 
 		return song.writeTags();
 	}

@@ -316,7 +316,8 @@ public class UIController{
 
 		HBox yearBox = new HBox();
 		Label yearLabel = new Label("Year: ");
-		Spinner yearInput = new Spinner(1000, 3000, song.getYear()); //TODO Yea this needs to be editable.....
+		Spinner yearInput = new Spinner(1000, 3000, song.getYear());
+		yearInput.setEditable(true);
 		yearInput.setPrefWidth(90);
 		yearBox.getChildren().add(yearLabel);
 		yearBox.getChildren().add(yearInput);

@@ -79,7 +79,7 @@ public class Song extends Media {
 					System.out.println(1);
 			AudioFile f = AudioFileIO.read(file);
 					System.out.println("file read");
-			Tag tag = f.getTag();
+			Tag tag = f.getTagOrCreateAndSetDefault();
 
 			if(tag == null)
 				throw new IOException("Tag missing");//TODO make this work regardless
@@ -129,7 +129,7 @@ public class Song extends Media {
 	public boolean writeTags(){
 		try{
 			AudioFile f = AudioFileIO.read(file);
-			Tag tag = f.getTag();
+			Tag tag = f.getTagOrCreateAndSetDefault();
 			tag.setField(FieldKey.TITLE, this.title);
 			tag.setField(FieldKey.ARTIST, artistName);
 
