@@ -232,10 +232,9 @@ public class UIController{
 				ObservableList<Playlist> selected = playlistList.getSelectionModel().getSelectedItems();
 				if(selected.size() > 0){
 					Playlist selPlaylist = selected.get(0);
-					playlistSongList.getItems().clear();
-					playlistSongList.getItems().addAll(selPlaylist.getAllTracks());
+					playlistSongList.setItems(selPlaylist.getAllTracks());
 				}else{
-					playlistSongList.getItems().clear();
+					playlistSongList.setItems(FXCollections.<Song>observableArrayList());
 				}
 			}
 		});
@@ -256,9 +255,17 @@ public class UIController{
 				showSongEditDialog(selected.get(0));
 			}
 		});
+		MenuItem removeFromPlaylist = new MenuItem("Remove song from playlist");
+		removeFromPlaylist.setOnAction(e->{
+			ObservableList<Song> selected = playlistSongList.getSelectionModel().getSelectedItems();
+			ObservableList<Playlist> playlists = playlistList.getSelectionModel().getSelectedItems();
+			if(selected.size() > 0 && playlists.size() > 0){
+				library.removeSongFromPlaylist(selected.get(0),playlists.get(0).getTitle());
+			}
+		});
 		addToPlaylist = new Menu("Add song to playlist...");
 		playlistMenusPlaylistSongList = addToPlaylist.getItems();
-		contextMenu.getItems().addAll(editItem, addToPlaylist);
+		contextMenu.getItems().addAll(editItem, addToPlaylist, removeFromPlaylist);
 		playlistSongList.setContextMenu(contextMenu);
 
 	}

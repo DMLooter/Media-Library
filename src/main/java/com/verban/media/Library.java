@@ -284,4 +284,9 @@ public class Library {
 		Playlist playlist = getPlaylist(playlistTitle);
 		playlist.addTrack(song);
 	}
+
+	public void removeSongFromPlaylist(Song song, String playlistTitle){
+		Playlist playlist = getPlaylist(playlistTitle);
+		playlist.removeTrack(song);
+	}
 }

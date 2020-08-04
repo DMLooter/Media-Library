@@ -2,6 +2,7 @@ package com.verban.media;
 
 import java.util.*;
 import java.io.Serializable;
+import javafx.collections.*;
 
 /**
 * Represents a playlist that contains a list of songs in order.
@@ -12,7 +13,7 @@ public class Playlist implements Serializable{
 	private static final long serialVersionUID=-278146593L;
 
 	private String title;
-	private List<Song> tracks;
+	private ObservableList<Song> tracks;
 
 	/**
 	* Creates a new empty playlist with the specified name
@@ -20,7 +21,7 @@ public class Playlist implements Serializable{
 	*/
 	public Playlist(String title){
 		this.title = title;
-		tracks = new ArrayList<Song>();
+		tracks = FXCollections.<Song>observableArrayList();
 	}
 
 	public void setTitle(String title){
@@ -47,12 +48,16 @@ public class Playlist implements Serializable{
 		tracks.add(s);
 	}
 
+	public boolean removeTrack(Song s){
+		return tracks.remove(s);
+	}
+
 	/**
-	* Returns a copy of the list of tracks in this Playlist.
-	* @return a copy of the list of tracks in this Playlist
-	*///TODO make this observable
-	public Song[] getAllTracks(){
-		return tracks.toArray(new Song[0]);
+	* Returns an observable list of the tracks in this Playlist.
+	* @return the observable list of tracks in this Playlist
+	*/
+	public ObservableList<Song> getAllTracks(){
+		return tracks;
 	}
 
 	@Override
